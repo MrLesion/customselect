@@ -1,12 +1,12 @@
 {
-  "name": "multiselect",
+  "name": "customselect",
   "version": "1.0.0",
-  "description": "",
-  "main": "multiselect-es6.js",
+  "description": "Small plugin to convert selects/multi-selects to lists of radio-inputs / checkbox-inputs with change events and observer for dynamically added markup",
+  "author": "Lasse Hove Nielsen <lassehove@lesion.dk> (https://lesion.dk)",
   "scripts": {
     "build": "gulp build"
   },
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/preset-env": "^7.12.7",
@@ -18,6 +18,5 @@
     "gulp-rename": "^2.0.0",
     "gulp-uglify": "^3.0.2",
     "gulp-uglify-es": "^2.0.0"
-  },
-  "dependencies": {}
+  }
 }
