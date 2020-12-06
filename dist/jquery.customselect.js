@@ -6,12 +6,18 @@
     var objOptions = $.extend({
       labelPosition: 'after',
       style: 'list',
-      observe: true
+      observe: true,
+      dropdownEmptyText: 'Nothing selected',
+      dropdownSelectedText: 'selected',
+      dropdownAllSelectedText: 'All selected'
     }, options);
     var customSelect = {
       settings: {
         types: ['select-multiple', 'select-one'],
-        added: 'custom-select-added'
+        added: 'custom-select-added',
+        dropdown: {
+          selectedLimit: 4
+        }
       },
       utils: {
         getCustomSelectID: function getCustomSelectID(intLength) {
@@ -31,10 +37,11 @@
           domElement.className = strClassName;
           return domElement;
         },
-        getSelectStyle: function getSelectStyle() {
+        getSelectStyle: function getSelectStyle(customSelectType) {
           var returnObj = {
             list: 'div',
             item: 'div',
+            type: customSelectType,
             dropdown: false
           };
 
@@ -72,12 +79,7 @@
       bindDropdown: function bindDropdown() {
         customSelect.utils.delegate('click', '.customselect-dropdown', function (event) {
           var domDropdown = event.target.closest('.customselect-dropdown');
-
-          if (domDropdown.className.indexOf('open') > -1) {
-            domDropdown.classList.remove('open');
-          } else {
-            domDropdown.classList.add('open');
-          }
+          customSelect.toggleDropdown(domDropdown);
         });
         document.addEventListener('click', function (event) {
           var documentDropdowns = event.target.querySelectorAll('.customselect-dropdown');
@@ -90,6 +92,13 @@
           }
         });
       },
+      toggleDropdown: function toggleDropdown(domDropdown) {
+        if (domDropdown.className.indexOf('open') > -1) {
+          domDropdown.classList.remove('open');
+        } else {
+          domDropdown.classList.add('open');
+        }
+      },
       convert: function convert(domParent, boolInit) {
         customSelect.build(domParent, boolInit);
       },
@@ -100,17 +109,15 @@
 
             if (newNodes !== null) {
               newNodes.forEach(function (newNode) {
-                if (newNode) {
-                  var appendedElementsMatchedSelector = newNode.querySelector('select');
+                var appendedElementsMatchedSelector = newNode.querySelector('select');
 
-                  if (newNode.matches('select')) {
-                    appendedElementsMatchedSelector = newNode;
-                  }
+                if (newNode.matches('select')) {
+                  appendedElementsMatchedSelector = newNode;
+                }
 
-                  if (appendedElementsMatchedSelector !== null && appendedElementsMatchedSelector.length > 0) {
-                    if (appendedElementsMatchedSelector.className.indexOf(customSelect.settings.added) === -1) {
-                      customSelect.convert(domParent, false);
-                    }
+                if (appendedElementsMatchedSelector !== null && appendedElementsMatchedSelector.length > 0) {
+                  if (appendedElementsMatchedSelector.className.indexOf(customSelect.settings.added) === -1) {
+                    customSelect.convert(domParent, false);
                   }
                 }
               });
@@ -126,22 +133,40 @@
         var targetNode = domParent;
         observer.observe(targetNode, config);
       },
-      bindEventLink: function bindEventLink(domCheckboxOptionInput, domOptions, boolIsDropDown) {
+      bindEventLink: function bindEventLink(domCheckboxOptionInput, domOptions, customSelectStyle) {
         domCheckboxOptionInput.addEventListener('change', function (event) {
           domOptions.find(function (o) {
             return o.value === event.target.value;
           }).selected = event.target.checked;
 
-          if (boolIsDropDown === true) {
+          if (customSelectStyle.dropdown === true) {
+            var domDropdown = domCheckboxOptionInput.closest('.customselect-dropdown');
             var selectedOptions = domOptions.filter(function (o) {
               return o.selected === true;
             });
-            var selectedTextNode = domCheckboxOptionInput.closest('.customselect-dropdown').querySelector('.customselect-dropdown-text');
-            selectedTextNode.innerText = selectedOptions.map(function (o) {
-              return o.value;
-            }).filter(function (v) {
-              return v;
-            }).join(', ');
+            var selectedTextNode = domDropdown.querySelector('.customselect-dropdown-text');
+
+            if (selectedOptions.length === 0) {
+              selectedTextNode.innerText = objOptions.dropdownEmptyText;
+            } else {
+              var selectedOptionsText = selectedOptions.map(function (o) {
+                return o.textContent;
+              }).filter(function (v) {
+                return v;
+              }).join(', ');
+
+              if (selectedOptions.length > customSelect.settings.dropdown.selectedLimit && selectedOptions.length < domOptions.length) {
+                selectedOptionsText = selectedOptions.length + ' ' + objOptions.dropdownSelectedText;
+              } else if (selectedOptions.length === domOptions.length) {
+                selectedOptionsText = objOptions.dropdownAllSelectedText;
+              }
+
+              selectedTextNode.innerText = selectedOptionsText;
+            }
+
+            if (customSelectStyle.type === 'select-one') {
+              domDropdown.classList.remove('open');
+            }
           }
         });
       },
@@ -153,12 +178,11 @@
         }
 
         domSelects.forEach(function (domSelect) {
-          var customSelectType = domSelect.type;
-          var customSelectStyle = customSelect.utils.getSelectStyle();
+          var customSelectStyle = customSelect.utils.getSelectStyle(domSelect.type);
           var customSelectName = '';
 
-          if (customSelect.settings.types.indexOf(customSelectType) === -1) {
-            console.error(customSelectType + ' is not a valid selector for customselect');
+          if (customSelect.settings.types.indexOf(customSelectStyle.type) === -1) {
+            console.error(customSelectStyle.type + ' is not a valid selector for customselect');
             return false;
           }
 
@@ -166,7 +190,7 @@
             return false;
           }
 
-          if (customSelectType === 'select-one') {
+          if (customSelectStyle.type === 'select-one') {
             customSelectName = customSelect.utils.getCustomSelectID(20);
           }
 
@@ -175,7 +199,7 @@
             return o.selected;
           });
 
-          if (selectedOptions.length === 0 && customSelectType === 'select-one') {
+          if (selectedOptions.length === 0 && customSelectStyle.type === 'select-one') {
             domOptions[0].selected = true;
           }
 
@@ -190,12 +214,12 @@
           domOptions.forEach(function (domOption) {
             var domCheckboxOptionInput = customSelect.utils.createElement('input', 'custom-checkbox-list-input');
             var id = customSelect.utils.getCustomSelectID(20);
-            domCheckboxOptionInput.type = customSelectType === 'select-one' ? 'radio' : 'checkbox';
+            domCheckboxOptionInput.type = customSelectStyle.type === 'select-one' ? 'radio' : 'checkbox';
             domCheckboxOptionInput.value = domOption.value;
             domCheckboxOptionInput.id = id;
             domCheckboxOptionInput.checked = domOption.selected;
 
-            if (customSelectType === 'select-one') {
+            if (customSelectStyle.type === 'select-one') {
               domCheckboxOptionInput.name = customSelectName;
             }
 
@@ -216,7 +240,7 @@
             }
 
             domCheckboxList.appendChild(domInputWrap);
-            customSelect.bindEventLink(domCheckboxOptionInput, domOptions, customSelectStyle.dropdown);
+            customSelect.bindEventLink(domCheckboxOptionInput, domOptions, customSelectStyle);
           });
           customSelect.addToDom(domSelect, domCheckboxList, objOptions);
         });
@@ -236,7 +260,7 @@
         customSelect.triggerInitialState(domCheckboxWrapper);
       },
       triggerInitialState: function triggerInitialState(domCheckboxWrapper) {
-        var preCheckedElements = domCheckboxWrapper.querySelectorAll('input:checked');
+        var preCheckedElements = domCheckboxWrapper.querySelectorAll('input');
 
         if (preCheckedElements.length > 0) {
           var changeEvent = new Event('change');

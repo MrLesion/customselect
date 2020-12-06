@@ -15,6 +15,12 @@ labelPosition: 'wrap' / 'before' / 'after' # defaults to 'after'
 style: 'list' / 'dropdown' / 'none' # defaults to 'list'
 
 observe: true / false # defaults to 'true'
+
+dropdownEmptyText: '' # defaults to 'Nothing selected'
+
+dropdownSelectedText: '' # defaults to 'selected'
+
+dropdownAllSelectedText: '' # defaults to 'All selected'
 ```
 
 ## License

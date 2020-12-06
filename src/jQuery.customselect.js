@@ -4,13 +4,19 @@
 		const objOptions = $.extend( {
 			labelPosition: 'after',
 			style: 'list',
-			observe: true
+			observe: true,
+			dropdownEmptyText: 'Nothing selected',
+			dropdownSelectedText: 'selected',
+			dropdownAllSelectedText: 'All selected'
 		}, options );
 
 		const customSelect = {
 			settings: {
 				types: [ 'select-multiple', 'select-one' ],
-				added: 'custom-select-added'
+				added: 'custom-select-added',
+				dropdown: {
+					selectedLimit: 4
+				}
 			},
 			utils: {
 				getCustomSelectID: ( intLength ) => {
@@ -27,10 +33,11 @@
 					domElement.className = strClassName;
 					return domElement;
 				},
-				getSelectStyle: () => {
+				getSelectStyle: ( customSelectType ) => {
 					let returnObj = {
 						list: 'div',
 						item: 'div',
+						type: customSelectType,
 						dropdown: false
 					};
 					if ( objOptions.style === 'list' || objOptions.style === 'dropdown' ) {
@@ -64,11 +71,7 @@
 			bindDropdown: () => {
 				customSelect.utils.delegate( 'click', '.customselect-dropdown', ( event ) => {
 					const domDropdown = event.target.closest( '.customselect-dropdown' );
-					if ( domDropdown.className.indexOf( 'open' ) > -1 ) {
-						domDropdown.classList.remove( 'open' );
-					} else {
-						domDropdown.classList.add( 'open' );
-					}
+					customSelect.toggleDropdown( domDropdown );
 				} );
 				document.addEventListener( 'click', ( event ) => {
 					const documentDropdowns = event.target.querySelectorAll( '.customselect-dropdown' );
@@ -80,6 +83,13 @@
 					}
 				} );
 			},
+			toggleDropdown: ( domDropdown ) => {
+				if ( domDropdown.className.indexOf( 'open' ) > -1 ) {
+					domDropdown.classList.remove( 'open' );
+				} else {
+					domDropdown.classList.add( 'open' );
+				}
+			},
 			convert: ( domParent, boolInit ) => {
 				customSelect.build( domParent, boolInit );
 			},
@@ -89,15 +99,13 @@
 						var newNodes = mutation.addedNodes;
 						if ( newNodes !== null ) {
 							newNodes.forEach( ( newNode ) => {
-								if ( newNode ) {
-									let appendedElementsMatchedSelector = newNode.querySelector( 'select' );
-									if ( newNode.matches( 'select' ) ) {
-										appendedElementsMatchedSelector = newNode;
-									}
-									if ( appendedElementsMatchedSelector !== null && appendedElementsMatchedSelector.length > 0 ) {
-										if ( appendedElementsMatchedSelector.className.indexOf( customSelect.settings.added ) === -1 ) {
-											customSelect.convert( domParent, false );
-										}
+								let appendedElementsMatchedSelector = newNode.querySelector( 'select' );
+								if ( newNode.matches( 'select' ) ) {
+									appendedElementsMatchedSelector = newNode;
+								}
+								if ( appendedElementsMatchedSelector !== null && appendedElementsMatchedSelector.length > 0 ) {
+									if ( appendedElementsMatchedSelector.className.indexOf( customSelect.settings.added ) === -1 ) {
+										customSelect.convert( domParent, false );
 									}
 								}
 
@@ -114,14 +122,29 @@
 				var targetNode = domParent;
 				observer.observe( targetNode, config );
 			},
-			bindEventLink: ( domCheckboxOptionInput, domOptions, boolIsDropDown ) => {
+			bindEventLink: ( domCheckboxOptionInput, domOptions, customSelectStyle ) => {
 				domCheckboxOptionInput.addEventListener( 'change', ( event ) => {
 					domOptions.find( o => o.value === event.target.value ).selected = event.target.checked;
-					if ( boolIsDropDown === true ) {
-						let selectedOptions = domOptions.filter( o => o.selected === true );
-						let selectedTextNode = domCheckboxOptionInput.closest( '.customselect-dropdown' ).querySelector( '.customselect-dropdown-text' );
 
-						selectedTextNode.innerText = selectedOptions.map( o => o.value ).filter( v => v ).join( ', ' );
+					if ( customSelectStyle.dropdown === true ) {
+						const domDropdown = domCheckboxOptionInput.closest( '.customselect-dropdown' );
+						let selectedOptions = domOptions.filter( o => o.selected === true );
+						let selectedTextNode = domDropdown.querySelector( '.customselect-dropdown-text' );
+
+						if ( selectedOptions.length === 0 ) {
+							selectedTextNode.innerText = objOptions.dropdownEmptyText;
+						} else {
+							let selectedOptionsText = selectedOptions.map( o => o.textContent ).filter( v => v ).join( ', ' );
+							if ( selectedOptions.length > customSelect.settings.dropdown.selectedLimit && selectedOptions.length < domOptions.length ) {
+								selectedOptionsText = selectedOptions.length + ' ' + objOptions.dropdownSelectedText;
+							} else if ( selectedOptions.length === domOptions.length ) {
+								selectedOptionsText = objOptions.dropdownAllSelectedText;
+							}
+							selectedTextNode.innerText = selectedOptionsText;
+						}
+						if ( customSelectStyle.type === 'select-one' ) {
+							domDropdown.classList.remove( 'open' );
+						}
 
 					}
 				} );
@@ -135,12 +158,11 @@
 
 				domSelects.forEach( ( domSelect ) => {
 
-					const customSelectType = domSelect.type;
-					const customSelectStyle = customSelect.utils.getSelectStyle();
+					const customSelectStyle = customSelect.utils.getSelectStyle( domSelect.type );
 					let customSelectName = '';
 
-					if ( customSelect.settings.types.indexOf( customSelectType ) === -1 ) {
-						console.error( customSelectType + ' is not a valid selector for customselect' );
+					if ( customSelect.settings.types.indexOf( customSelectStyle.type ) === -1 ) {
+						console.error( customSelectStyle.type + ' is not a valid selector for customselect' );
 						return false;
 					}
 
@@ -148,14 +170,14 @@
 						return false;
 					}
 
-					if ( customSelectType === 'select-one' ) {
+					if ( customSelectStyle.type === 'select-one' ) {
 						customSelectName = customSelect.utils.getCustomSelectID( 20 );
 					}
 
 					const domOptions = Array.from( domSelect.options );
 					const selectedOptions = domOptions.filter( o => o.selected );
 
-					if ( selectedOptions.length === 0 && customSelectType === 'select-one' ) {
+					if ( selectedOptions.length === 0 && customSelectStyle.type === 'select-one' ) {
 						domOptions[ 0 ].selected = true;
 					}
 
@@ -170,12 +192,12 @@
 					domOptions.forEach( ( domOption ) => {
 						let domCheckboxOptionInput = customSelect.utils.createElement( 'input', 'custom-checkbox-list-input' );
 						const id = customSelect.utils.getCustomSelectID( 20 );
-						domCheckboxOptionInput.type = customSelectType === 'select-one' ? 'radio' : 'checkbox';
+						domCheckboxOptionInput.type = customSelectStyle.type === 'select-one' ? 'radio' : 'checkbox';
 						domCheckboxOptionInput.value = domOption.value;
 						domCheckboxOptionInput.id = id;
 						domCheckboxOptionInput.checked = domOption.selected;
 
-						if ( customSelectType === 'select-one' ) {
+						if ( customSelectStyle.type === 'select-one' ) {
 							domCheckboxOptionInput.name = customSelectName;
 						}
 
@@ -199,7 +221,7 @@
 						}
 						domCheckboxList.appendChild( domInputWrap );
 
-						customSelect.bindEventLink( domCheckboxOptionInput, domOptions, customSelectStyle.dropdown );
+						customSelect.bindEventLink( domCheckboxOptionInput, domOptions, customSelectStyle );
 
 					} );
 					customSelect.addToDom( domSelect, domCheckboxList, objOptions );
@@ -221,13 +243,12 @@
 				customSelect.triggerInitialState( domCheckboxWrapper );
 			},
 			triggerInitialState: ( domCheckboxWrapper ) => {
-				const preCheckedElements = domCheckboxWrapper.querySelectorAll( 'input:checked' );
+				const preCheckedElements = domCheckboxWrapper.querySelectorAll( 'input' );
 				if ( preCheckedElements.length > 0 ) {
 					const changeEvent = new Event( 'change' );
 					preCheckedElements.forEach( ( domInput ) => {
 						domInput.dispatchEvent( changeEvent );
 					} );
-
 
 				}
 			}
