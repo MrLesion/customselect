@@ -9,11 +9,12 @@ Small plugin to convert selects/multi-selects to lists of radio-inputs / checkbo
 * Observe dynamically added markup, to bind them on the fly
 
 ## Usage
+Bind on any parant element of any select-element
 ```javascript
-jQuery('.element-cintaining-selects').customselect();
+jQuery('.element-containing-selects').customselect();
 
 // or with custom settings
-jQuery('.element-cintaining-selects').customselect({
+jQuery('.element-containing-selects').customselect({
     labelPosition: 'before',
     observe: false,
     dropdownEmptyText: 'Please select option'
@@ -22,7 +23,7 @@ jQuery('.element-cintaining-selects').customselect({
 
 ## Options
 | Key                       | Default             | Values                     |  Description                                                                  |
-| --------------------------|:-------------------:|---------------------------:|------------------------------------------------------------------------------:|
+| --------------------------|:-------------------:|---------------------------|--------------------------------------------------------------------------------|
 | labelPosition             | `after`             | `after`, `before`, `wrap`  | Position of the label - `wrap` wraps the input in the label  				   |
 | style            			| `list`              | `list`, `dropdown`, `none` | Style of the select option                                                    |
 | observe                   | `true`              | Boolean                    | Use Mutation Observer to watch for dynamically added markup                   |
