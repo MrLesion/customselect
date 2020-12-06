@@ -62,7 +62,7 @@
 			},
 			init: () => {
 				jSelector.each( ( index, domParent ) => {
-					customSelect.convert( domParent, true );
+					customSelect.build( domParent, true );
 				} );
 				if ( objOptions.style === 'dropdown' ) {
 					customSelect.bindDropdown();
@@ -90,9 +90,6 @@
 					domDropdown.classList.add( 'open' );
 				}
 			},
-			convert: ( domParent, boolInit ) => {
-				customSelect.build( domParent, boolInit );
-			},
 			bindListener: ( domParent ) => {
 				const observer = new MutationObserver( function ( mutations ) {
 					mutations.forEach( function ( mutation ) {
@@ -105,7 +102,7 @@
 								}
 								if ( appendedElementsMatchedSelector !== null && appendedElementsMatchedSelector.length > 0 ) {
 									if ( appendedElementsMatchedSelector.className.indexOf( customSelect.settings.added ) === -1 ) {
-										customSelect.convert( domParent, false );
+										customSelect.build( domParent, false );
 									}
 								}
 

@@ -69,7 +69,7 @@
       },
       init: function init() {
         jSelector.each(function (index, domParent) {
-          customSelect.convert(domParent, true);
+          customSelect.build(domParent, true);
         });
 
         if (objOptions.style === 'dropdown') {
@@ -99,9 +99,6 @@
           domDropdown.classList.add('open');
         }
       },
-      convert: function convert(domParent, boolInit) {
-        customSelect.build(domParent, boolInit);
-      },
       bindListener: function bindListener(domParent) {
         var observer = new MutationObserver(function (mutations) {
           mutations.forEach(function (mutation) {
@@ -117,7 +114,7 @@
 
                 if (appendedElementsMatchedSelector !== null && appendedElementsMatchedSelector.length > 0) {
                   if (appendedElementsMatchedSelector.className.indexOf(customSelect.settings.added) === -1) {
-                    customSelect.convert(domParent, false);
+                    customSelect.build(domParent, false);
                   }
                 }
               });
