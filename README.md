@@ -10,11 +10,11 @@ jQuery( container ).customselect( options )
 
 ## Options
 ```javascript
-labelPosition # 'wrap', 'before', 'after' - defaults to 'after'
+labelPosition: 'wrap' / 'before' / 'after' # defaults to 'after'
 
-style # 'list', 'none' - defaults to 'list'
+style: 'list' / 'none' # defaults to 'list'
 
-observe # true, false - defaults to 'true'
+observe: true / false # defaults to 'true'
 ```
 
 ## License
