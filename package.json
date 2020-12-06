@@ -1,0 +1,22 @@
+{
+  "name": "multiselect",
+  "version": "1.0.0",
+  "description": "",
+  "main": "multiselect-es6.js",
+  "scripts": {
+    "build": "gulp build"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.12.9",
+    "@babel/preset-env": "^7.12.7",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-polyfiller": "0.0.1",
+    "gulp-rename": "^2.0.0",
+    "gulp-uglify": "^3.0.2",
+    "gulp-uglify-es": "^2.0.0"
+  },
+  "dependencies": {}
+}

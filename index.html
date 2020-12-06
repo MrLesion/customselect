@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title></title>
+		<link rel="stylesheet" href="dist/customselect.css">
+	</head>
+
+	<body>
+		<div class="customselect-parent-node">
+			<div class="multi-form-element">
+				<legend>Multi-select</legend>
+				<select name="multi" id="multi" multiple data-role="custom-multiselect">
+					<option value="1">Multi-select 1</option>
+					<option value="2">Multi-select 2</option>
+					<option value="3">Multi-select 3</option>
+					<option value="4">Multi-select 4</option>
+					<option value="5">Multi-select. 5</option>
+					<option value="6">Multi-select 6</option>
+				</select>
+			</div>
+			<div class="single-form-element">
+				<legend>Select</legend>
+				<select name="single" id="single" data-role="custom-select">
+					<option value="1">Select 1</option>
+					<option value="2">Select 2</option>
+					<option value="3">Select 3</option>
+					<option value="4">Select 4</option>
+					<option value="5">Select 5</option>
+					<option value="6">Select 6</option>
+				</select>
+			</div>
+		</div>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="dist/jquery.customselect.js"></script>
+		<script src="src/test.js"></script>
+		<script>
+		jQuery( document ).ready( function () {
+			jQuery( '.customselect-parent-node' ).customselect( {
+				labelPosition: 'after', // 'wrap', 'before', 'after'
+				style: 'list', //'list', 'none'
+				observe: true //true, false
+			} );
+		} );
+		</script>
+	</body>
+
+</html>
