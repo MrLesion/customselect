@@ -12,7 +12,7 @@ jQuery( container ).customselect( options )
 ```javascript
 labelPosition: 'wrap' / 'before' / 'after' # defaults to 'after'
 
-style: 'list' / 'none' # defaults to 'list'
+style: 'list' / 'dropdown' / 'none' # defaults to 'list'
 
 observe: true / false # defaults to 'true'
 ```
