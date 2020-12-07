@@ -1,26 +1,26 @@
-.custom-checkbox-list {
+.customselect-list {
 	display: flex;
 	flex-direction: column;
 	list-style: none;
 	padding: 0;
 	margin: 0;
 
-	.custom-checkbox-list-item {
-		position: relative;
-		display: flex;
-		justify-content: center;
-		padding: 0;
-		margin: 0;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
+	.customselect-list-input-item {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
 
-	.custom-checkbox-list-input {
+	.customselect-list-input {
 		margin: .9em .2em .9em .9em;
 	}
 
-	.custom-checkbox-list-label {
+	.customselect-list-label {
 		cursor: pointer;
 		padding: 0.5em;
 		margin-bottom: 0.1em;
@@ -36,7 +36,7 @@
 			box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 			border-width-top: 0;
 
-			.custom-checkbox-list-input-item:not(.customselect-dropdown-text) {
+			.customselect-list-input-item:not(.customselect-dropdown-text) {
 				opacity: 1;
 				height: auto;
 			}
@@ -64,7 +64,7 @@
 		}
 
 
-		.custom-checkbox-list-input-item:not(.customselect-dropdown-text) {
+		.customselect-list-input-item:not(.customselect-dropdown-text) {
 			opacity: 0;
 			height: 0;
 			overflow: hidden;

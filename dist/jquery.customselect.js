@@ -203,16 +203,16 @@
             domOptions[0].selected = true;
           }
 
-          var domCheckboxList = customSelect.utils.createElement(customSelectStyle.list, 'custom-checkbox-list');
+          var domCheckboxList = customSelect.utils.createElement(customSelectStyle.list, 'customselect-list');
 
           if (customSelectStyle.dropdown === true) {
             domCheckboxList.classList.add('customselect-dropdown');
-            var domSelectedOption = customSelect.utils.createElement(customSelectStyle.item, 'custom-checkbox-list-item customselect-dropdown-text');
+            var domSelectedOption = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-item customselect-dropdown-text');
             domCheckboxList.appendChild(domSelectedOption);
           }
 
           domOptions.forEach(function (domOption) {
-            var domCheckboxOptionInput = customSelect.utils.createElement('input', 'custom-checkbox-list-input');
+            var domCheckboxOptionInput = customSelect.utils.createElement('input', 'customselect-list-input');
             var id = customSelect.utils.getCustomSelectID(20);
             domCheckboxOptionInput.type = customSelectStyle.type === 'select-one' ? 'radio' : 'checkbox';
             domCheckboxOptionInput.value = domOption.value;
@@ -223,10 +223,10 @@
               domCheckboxOptionInput.name = customSelectName;
             }
 
-            var domCheckboxOptionLabel = customSelect.utils.createElement('label', 'custom-checkbox-list-label');
+            var domCheckboxOptionLabel = customSelect.utils.createElement('label', 'customselect-list-label');
             domCheckboxOptionLabel.innerText = domOption.text;
             domCheckboxOptionLabel.htmlFor = id;
-            var domInputWrap = customSelect.utils.createElement(customSelectStyle.item, 'custom-checkbox-list-input-item');
+            var domInputWrap = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item');
 
             if (objOptions.labelPosition === 'wrap') {
               domCheckboxOptionLabel.appendChild(domCheckboxOptionInput);
@@ -251,7 +251,7 @@
       },
       addToDom: function addToDom(domSelect, domCheckboxList, objOptions) {
         var domParent = domSelect.parentNode;
-        var domCheckboxWrapper = customSelect.utils.createElement('div', 'custom-checkbox-list-container');
+        var domCheckboxWrapper = customSelect.utils.createElement('div', 'customselect-list-container');
         domSelect.classList.add(customSelect.settings.added);
         domSelect.setAttribute('style', 'display:none !important');
         domCheckboxWrapper.appendChild(domSelect);

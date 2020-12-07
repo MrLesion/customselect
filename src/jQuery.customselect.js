@@ -179,16 +179,16 @@
                         domOptions[0].selected = true;
                     }
 
-                    let domCheckboxList = customSelect.utils.createElement(customSelectStyle.list, 'custom-checkbox-list');
+                    let domCheckboxList = customSelect.utils.createElement(customSelectStyle.list, 'customselect-list');
 
                     if (customSelectStyle.dropdown === true) {
                         domCheckboxList.classList.add('customselect-dropdown');
-                        let domSelectedOption = customSelect.utils.createElement(customSelectStyle.item, 'custom-checkbox-list-item customselect-dropdown-text');
+                        let domSelectedOption = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-item customselect-dropdown-text');
                         domCheckboxList.appendChild(domSelectedOption)
                     }
 
                     domOptions.forEach((domOption) => {
-                        let domCheckboxOptionInput = customSelect.utils.createElement('input', 'custom-checkbox-list-input');
+                        let domCheckboxOptionInput = customSelect.utils.createElement('input', 'customselect-list-input');
                         const id = customSelect.utils.getCustomSelectID(20);
                         domCheckboxOptionInput.type = customSelectStyle.type === 'select-one' ? 'radio' : 'checkbox';
                         domCheckboxOptionInput.value = domOption.value;
@@ -199,11 +199,11 @@
                             domCheckboxOptionInput.name = customSelectName;
                         }
 
-                        let domCheckboxOptionLabel = customSelect.utils.createElement('label', 'custom-checkbox-list-label');
+                        let domCheckboxOptionLabel = customSelect.utils.createElement('label', 'customselect-list-label');
                         domCheckboxOptionLabel.innerText = domOption.text;
                         domCheckboxOptionLabel.htmlFor = id;
 
-                        let domInputWrap = customSelect.utils.createElement(customSelectStyle.item, 'custom-checkbox-list-input-item');
+                        let domInputWrap = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item');
 
 
 
@@ -232,7 +232,7 @@
             },
             addToDom: (domSelect, domCheckboxList, objOptions) => {
                 const domParent = domSelect.parentNode;
-                let domCheckboxWrapper = customSelect.utils.createElement('div', 'custom-checkbox-list-container');
+                let domCheckboxWrapper = customSelect.utils.createElement('div', 'customselect-list-container');
                 domSelect.classList.add(customSelect.settings.added);
                 domSelect.setAttribute('style', 'display:none !important');
                 domCheckboxWrapper.appendChild(domSelect);
