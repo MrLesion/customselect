@@ -4,7 +4,7 @@
   "description": "Small plugin to convert selects/multi-selects to lists of radio-inputs / checkbox-inputs with change events and observer for dynamically added markup",
   "author": "Lasse Hove Nielsen <lassehove@lesion.dk> (https://lesion.dk)",
   "scripts": {
-    "build": "gulp build"
+    "watch": "gulp watch"
   },
   "license": "MIT",
   "devDependencies": {
@@ -16,6 +16,7 @@
     "gulp-jslint": "^1.0.10",
     "gulp-polyfiller": "0.0.1",
     "gulp-rename": "^2.0.0",
+    "gulp-sass": "^4.1.0",
     "gulp-uglify": "^3.0.2",
     "gulp-uglify-es": "^2.0.0"
   }
