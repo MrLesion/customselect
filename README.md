@@ -23,14 +23,15 @@ jQuery('.element-containing-selects').customselect({
 ```
 
 ## Options
-| Key                       | Default             | Values                     |  Description                                                                  |
-| --------------------------|---------------------|----------------------------|-------------------------------------------------------------------------------|
-| labelPosition             | `after`             | `after`, `before`, `wrap`  | Position of the label - `wrap` wraps the input in the label  				   |
-| style            			| `list`              | `list`, `dropdown`, `none` | Style of the select option                                                    |
-| observe                   | `true`              | Boolean                    | Use Mutation Observer to watch for dynamically added markup                   |
-| dropdownEmptyText         | `Nothing selected`  | String                     | Empty text for dropdown placeholder                                           |
-| dropdownSelectedText      | `selected`          | String                     | Selected postfix for multi-dropdown placeholder                               |
-| dropdownAllSelectedText   | `All selected`      | String                     | All selected text for multi-dropdown placeholder 							   |
+| Key                       | Default             					| Values                     				|  Description                                                                  |
+| --------------------------|---------------------------------------|-------------------------------------------|-------------------------------------------------------------------------------|
+| labelPosition             | `after`             					| `after`, `before`, `wrap`  				| Position of the label - `wrap` wraps the input in the label  				    |
+| style            			| `list`              					| `list`, `dropdown`, `none` 				| Style of the select option                                                    |
+| observe                   | `true`              					| Boolean                    				| Use Mutation Observer to watch for dynamically added markup                   |
+| selectors                 | `['select-multiple', 'select-one']`   | Array['select-multiple', 'select-one']    | Narrow down to either select-one, melect-multiple or both                     |
+| dropdownEmptyText         | `Nothing selected`  					| String                     				| Empty text for dropdown placeholder                                           |
+| dropdownSelectedText      | `selected`          					| String                     				| Selected postfix for multi-dropdown placeholder                               |
+| dropdownAllSelectedText   | `All selected`      					| String                     				| All selected text for multi-dropdown placeholder 							    |
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
