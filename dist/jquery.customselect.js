@@ -6,6 +6,7 @@
     var objOptions = $.extend({
       labelPosition: 'after',
       style: 'list',
+      selectors: ['select-multiple', 'select-one'],
       observe: true,
       dropdownEmptyText: 'Nothing selected',
       dropdownSelectedText: 'selected',
@@ -13,7 +14,6 @@
     }, options);
     var customSelect = {
       settings: {
-        types: ['select-multiple', 'select-one'],
         added: 'custom-select-added',
         dropdown: {
           selectedLimit: 4
@@ -168,7 +168,10 @@
         });
       },
       build: function build(domParent, boolInit) {
-        var domSelects = domParent.querySelectorAll('select');
+        var domAllSelects = Array.from(domParent.querySelectorAll('select'));
+        var domSelects = domAllSelects.filter(function (s) {
+          return objOptions.selectors.indexOf(s.type) > -1;
+        });
 
         if (domSelects === null) {
           return false;
@@ -178,7 +181,7 @@
           var customSelectStyle = customSelect.utils.getSelectStyle(domSelect.type);
           var customSelectName = '';
 
-          if (customSelect.settings.types.indexOf(customSelectStyle.type) === -1) {
+          if (objOptions.selectors.indexOf(customSelectStyle.type) === -1) {
             console.error(customSelectStyle.type + ' is not a valid selector for customselect');
             return false;
           }
@@ -250,7 +253,7 @@
         var domParent = domSelect.parentNode;
         var domCheckboxWrapper = customSelect.utils.createElement('div', 'custom-checkbox-list-container');
         domSelect.classList.add(customSelect.settings.added);
-        domSelect.style.display = 'none';
+        domSelect.setAttribute('style', 'display:none !important');
         domCheckboxWrapper.appendChild(domSelect);
         domCheckboxWrapper.appendChild(domCheckboxList);
         domParent.appendChild(domCheckboxWrapper);
