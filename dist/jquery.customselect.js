@@ -9,6 +9,8 @@
       classList: '',
       selectors: ['select-multiple', 'select-one'],
       observe: true,
+      multiSelectedLimit: 3,
+      multiSelectedDelimiter: ' | ',
       dropdownEmptyText: 'Nothing selected',
       dropdownSelectedText: 'selected',
       dropdownAllSelectedText: 'All selected'
@@ -16,10 +18,7 @@
     var customSelect = {
       _instances: [],
       settings: {
-        added: 'custom-select-added',
-        dropdown: {
-          selectedLimit: 5
-        }
+        added: 'custom-select-added'
       },
       utils: {
         getCustomSelectID: function getCustomSelectID(intLength) {
@@ -160,9 +159,9 @@
                 return o.textContent;
               }).filter(function (v) {
                 return v;
-              }).join(', ');
+              }).join(objDataOptions.multiSelectedDelimiter);
 
-              if (selectedOptions.length > customSelect.settings.dropdown.selectedLimit && selectedOptions.length < domOptions.length) {
+              if (selectedOptions.length > objDataOptions.multiSelectedLimit && selectedOptions.length < domOptions.length) {
                 selectedOptionsText = selectedOptions.length + ' ' + objDataOptions.dropdownSelectedText;
               } else if (selectedOptions.length === domOptions.length) {
                 selectedOptionsText = objDataOptions.dropdownAllSelectedText;
@@ -188,11 +187,19 @@
         }
 
         domSelects.forEach(function (domSelect) {
-          var dataOptions = domSelect.dataset;
+          if (domSelect.className.indexOf(customSelect.settings.added) > -1) {
+            return false;
+          }
+
           var customSelectID = customSelect.utils.getCustomSelectID(20);
+          var dataOptions = domSelect.dataset;
           var objDataOptions = Object.assign({}, objOptions);
           objDataOptions = Object.assign(objDataOptions, dataOptions);
-          domSelect.dataset.customselectDataId = customSelectID;
+          var customSelectStyle = customSelect.utils.getSelectStyle(domSelect.type, objDataOptions);
+          var domOptions = Array.from(domSelect.options);
+          var selectedOptions = domOptions.filter(function (o) {
+            return o.selected;
+          });
 
           customSelect._instances.push({
             id: customSelectID,
@@ -200,26 +207,12 @@
             options: objDataOptions
           });
 
-          var customSelectStyle = customSelect.utils.getSelectStyle(domSelect.type, objDataOptions);
-          var customSelectName = '';
+          domSelect.dataset.customselectDataId = customSelectID;
 
           if (objDataOptions.selectors.indexOf(customSelectStyle.type) === -1) {
             console.error(customSelectStyle.type + ' is not a valid selector for customselect');
             return false;
           }
-
-          if (domSelect.className.indexOf(customSelect.settings.added) > -1) {
-            return false;
-          }
-
-          if (customSelectStyle.type === 'select-one') {
-            customSelectName = customSelectID;
-          }
-
-          var domOptions = Array.from(domSelect.options);
-          var selectedOptions = domOptions.filter(function (o) {
-            return o.selected;
-          });
 
           if (selectedOptions.length === 0 && customSelectStyle.type === 'select-one') {
             domOptions[0].selected = true;
@@ -228,6 +221,7 @@
           var domCheckboxList = customSelect.utils.createElement(customSelectStyle.list, 'customselect-list ' + objDataOptions.classList);
           domCheckboxList.id = customSelectID;
           domCheckboxList.dataset.placeholder = objDataOptions.dropdownEmptyText;
+          domCheckboxList.dataset.type = customSelectStyle.type;
 
           if (customSelectStyle.dropdown === true) {
             domCheckboxList.classList.add('customselect-dropdown');
@@ -236,35 +230,9 @@
           }
 
           domOptions.forEach(function (domOption) {
-            var domCheckboxOptionInput = customSelect.utils.createElement('input', 'customselect-list-input');
-            var id = customSelect.utils.getCustomSelectID(20);
-            domCheckboxOptionInput.type = customSelectStyle.type === 'select-one' ? 'radio' : 'checkbox';
-            domCheckboxOptionInput.value = domOption.value;
-            domCheckboxOptionInput.id = id;
-            domCheckboxOptionInput.checked = domOption.selected;
-
-            if (customSelectStyle.type === 'select-one') {
-              domCheckboxOptionInput.name = customSelectName;
-            }
-
-            var domCheckboxOptionLabel = customSelect.utils.createElement('label', 'customselect-list-label');
-            domCheckboxOptionLabel.innerText = domOption.text;
-            domCheckboxOptionLabel.htmlFor = id;
-            var domInputWrap = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item');
-
-            if (objDataOptions.labelPosition === 'wrap') {
-              domCheckboxOptionLabel.appendChild(domCheckboxOptionInput);
-              domInputWrap.appendChild(domCheckboxOptionLabel);
-            } else if (objDataOptions.labelPosition === 'before') {
-              domInputWrap.appendChild(domCheckboxOptionLabel);
-              domInputWrap.appendChild(domCheckboxOptionInput);
-            } else if (objDataOptions.labelPosition === 'after') {
-              domInputWrap.appendChild(domCheckboxOptionInput);
-              domInputWrap.appendChild(domCheckboxOptionLabel);
-            }
-
-            domCheckboxList.appendChild(domInputWrap);
-            customSelect.bindEventLink(domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
+            var buildedOption = customSelect.buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions);
+            domCheckboxList.appendChild(buildedOption.domInputWrap);
+            customSelect.bindEventLink(buildedOption.domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
           });
           customSelect.addToDom(domSelect, domCheckboxList, objDataOptions);
         });
@@ -272,6 +240,44 @@
         if (boolInit === true && objOptions.observe === true) {
           customSelect.bindListener(domParent);
         }
+      },
+      buildDomOption: function buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions) {
+        var domCheckboxOptionInput = customSelect.utils.createElement('input', 'customselect-list-input');
+        var customSelectName = '';
+        var id = customSelect.utils.getCustomSelectID(20);
+        domCheckboxOptionInput.type = customSelectStyle.type === 'select-one' ? 'radio' : 'checkbox';
+        domCheckboxOptionInput.value = domOption.value;
+        domCheckboxOptionInput.id = id;
+        domCheckboxOptionInput.checked = domOption.selected;
+
+        if (customSelectStyle.type === 'select-one') {
+          customSelectName = customSelectID;
+          domCheckboxOptionInput.name = customSelectName;
+        }
+
+        var domCheckboxOptionLabel = customSelect.utils.createElement('label', 'customselect-list-label');
+        domCheckboxOptionLabel.innerText = domOption.text;
+        domCheckboxOptionLabel.htmlFor = id;
+        var domInputWrapElement = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item');
+        var domInputWrap = customSelect.positionLabel(objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, domInputWrapElement);
+        return {
+          domCheckboxOptionInput: domCheckboxOptionInput,
+          domInputWrap: domInputWrap
+        };
+      },
+      positionLabel: function positionLabel(labelPosition, input, label, wrapElem) {
+        if (labelPosition === 'before') {
+          wrapElem.appendChild(label);
+          wrapElem.appendChild(input);
+        } else if (labelPosition === 'after') {
+          wrapElem.appendChild(input);
+          wrapElem.appendChild(label);
+        } else {
+          label.appendChild(input);
+          wrapElem.appendChild(label);
+        }
+
+        return wrapElem;
       },
       addToDom: function addToDom(domSelect, domCheckboxList, objDataOptions) {
         var domParent = domSelect.parentNode;

@@ -7,6 +7,8 @@
             classList: '',
             selectors: ['select-multiple', 'select-one'],
             observe: true,
+            multiSelectedLimit: 3,
+            multiSelectedDelimiter: ' | ',
             dropdownEmptyText: 'Nothing selected',
             dropdownSelectedText: 'selected',
             dropdownAllSelectedText: 'All selected'
@@ -15,10 +17,7 @@
         const customSelect = {
             _instances: [],
             settings: {
-                added: 'custom-select-added',
-                dropdown: {
-                    selectedLimit: 5
-                }
+                added: 'custom-select-added'
             },
             utils: {
                 getCustomSelectID: (intLength) => {
@@ -77,6 +76,7 @@
                     const domDropdown = event.target.closest('.customselect-dropdown');
                     customSelect.closeAllDropdowns(domDropdown);
                     customSelect.toggleDropdown(domDropdown);
+
                 });
 
                 document.addEventListener('click', (event) => {
@@ -140,8 +140,8 @@
                         if (selectedOptions.length === 0) {
                             selectedTextNode.innerText = objDataOptions.dropdownEmptyText;
                         } else {
-                            let selectedOptionsText = selectedOptions.map(o => o.textContent).filter(v => v).join(', ');
-                            if (selectedOptions.length > customSelect.settings.dropdown.selectedLimit && selectedOptions.length < domOptions.length) {
+                            let selectedOptionsText = selectedOptions.map(o => o.textContent).filter(v => v).join(objDataOptions.multiSelectedDelimiter);
+                            if (selectedOptions.length > objDataOptions.multiSelectedLimit && selectedOptions.length < domOptions.length) {
                                 selectedOptionsText = selectedOptions.length + ' ' + objDataOptions.dropdownSelectedText;
                             } else if (selectedOptions.length === domOptions.length) {
                                 selectedOptionsText = objDataOptions.dropdownAllSelectedText;
@@ -165,33 +165,28 @@
 
                 domSelects.forEach((domSelect) => {
 
-                    const dataOptions = domSelect.dataset;
-                    const customSelectID = customSelect.utils.getCustomSelectID(20);
+                    if (domSelect.className.indexOf(customSelect.settings.added) > -1) {
+                        return false;
+                    }
 
+                    const customSelectID = customSelect.utils.getCustomSelectID(20);
+                    const dataOptions = domSelect.dataset;
                     let objDataOptions = Object.assign({}, objOptions);
                     objDataOptions = Object.assign(objDataOptions, dataOptions);
 
-                    domSelect.dataset.customselectDataId = customSelectID;
-                    customSelect._instances.push({ id: customSelectID, select: domSelect, options: objDataOptions });
-
                     const customSelectStyle = customSelect.utils.getSelectStyle(domSelect.type, objDataOptions);
-                    let customSelectName = '';
+                    const domOptions = Array.from(domSelect.options);
+                    const selectedOptions = domOptions.filter(o => o.selected);
+
+
+
+                    customSelect._instances.push({ id: customSelectID, select: domSelect, options: objDataOptions });
+                    domSelect.dataset.customselectDataId = customSelectID;
 
                     if (objDataOptions.selectors.indexOf(customSelectStyle.type) === -1) {
                         console.error(customSelectStyle.type + ' is not a valid selector for customselect');
                         return false;
                     }
-
-                    if (domSelect.className.indexOf(customSelect.settings.added) > -1) {
-                        return false;
-                    }
-
-                    if (customSelectStyle.type === 'select-one') {
-                        customSelectName = customSelectID;
-                    }
-
-                    const domOptions = Array.from(domSelect.options);
-                    const selectedOptions = domOptions.filter(o => o.selected);
 
                     if (selectedOptions.length === 0 && customSelectStyle.type === 'select-one') {
                         domOptions[0].selected = true;
@@ -201,6 +196,7 @@
 
                     domCheckboxList.id = customSelectID;
                     domCheckboxList.dataset.placeholder = objDataOptions.dropdownEmptyText;
+                    domCheckboxList.dataset.type = customSelectStyle.type;
 
                     if (customSelectStyle.dropdown === true) {
                         domCheckboxList.classList.add('customselect-dropdown');
@@ -209,38 +205,9 @@
                     }
 
                     domOptions.forEach((domOption) => {
-                        let domCheckboxOptionInput = customSelect.utils.createElement('input', 'customselect-list-input');
-                        const id = customSelect.utils.getCustomSelectID(20);
-                        domCheckboxOptionInput.type = customSelectStyle.type === 'select-one' ? 'radio' : 'checkbox';
-                        domCheckboxOptionInput.value = domOption.value;
-                        domCheckboxOptionInput.id = id;
-                        domCheckboxOptionInput.checked = domOption.selected;
-
-                        if (customSelectStyle.type === 'select-one') {
-                            domCheckboxOptionInput.name = customSelectName;
-                        }
-
-                        let domCheckboxOptionLabel = customSelect.utils.createElement('label', 'customselect-list-label');
-                        domCheckboxOptionLabel.innerText = domOption.text;
-                        domCheckboxOptionLabel.htmlFor = id;
-
-                        let domInputWrap = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item');
-
-
-
-                        if (objDataOptions.labelPosition === 'wrap') {
-                            domCheckboxOptionLabel.appendChild(domCheckboxOptionInput);
-                            domInputWrap.appendChild(domCheckboxOptionLabel);
-                        } else if (objDataOptions.labelPosition === 'before') {
-                            domInputWrap.appendChild(domCheckboxOptionLabel);
-                            domInputWrap.appendChild(domCheckboxOptionInput);
-                        } else if (objDataOptions.labelPosition === 'after') {
-                            domInputWrap.appendChild(domCheckboxOptionInput);
-                            domInputWrap.appendChild(domCheckboxOptionLabel);
-                        }
-                        domCheckboxList.appendChild(domInputWrap);
-
-                        customSelect.bindEventLink(domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
+                        const buildedOption = customSelect.buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions);
+                        domCheckboxList.appendChild(buildedOption.domInputWrap);
+                        customSelect.bindEventLink(buildedOption.domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
 
                     });
 
@@ -251,6 +218,45 @@
                     customSelect.bindListener(domParent);
                 }
 
+            },
+            buildDomOption: (domOption, customSelectID, customSelectStyle, objDataOptions) => {
+                let domCheckboxOptionInput = customSelect.utils.createElement('input', 'customselect-list-input');
+                let customSelectName = '';
+                const id = customSelect.utils.getCustomSelectID(20);
+                domCheckboxOptionInput.type = customSelectStyle.type === 'select-one' ? 'radio' : 'checkbox';
+                domCheckboxOptionInput.value = domOption.value;
+                domCheckboxOptionInput.id = id;
+                domCheckboxOptionInput.checked = domOption.selected;
+
+                if (customSelectStyle.type === 'select-one') {
+                    customSelectName = customSelectID;
+                    domCheckboxOptionInput.name = customSelectName;
+                }
+
+                let domCheckboxOptionLabel = customSelect.utils.createElement('label', 'customselect-list-label');
+                domCheckboxOptionLabel.innerText = domOption.text;
+                domCheckboxOptionLabel.htmlFor = id;
+
+                const domInputWrapElement = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item');
+                const domInputWrap = customSelect.positionLabel(objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, domInputWrapElement);
+                return {
+                    domCheckboxOptionInput: domCheckboxOptionInput,
+                    domInputWrap: domInputWrap
+                };
+
+            },
+            positionLabel: (labelPosition, input, label, wrapElem) => {
+                if (labelPosition === 'before') {
+                    wrapElem.appendChild(label);
+                    wrapElem.appendChild(input);
+                } else if (labelPosition === 'after') {
+                    wrapElem.appendChild(input);
+                    wrapElem.appendChild(label);
+                } else {
+                    label.appendChild(input);
+                    wrapElem.appendChild(label);
+                }
+                return wrapElem;
             },
             addToDom: (domSelect, domCheckboxList, objDataOptions) => {
                 const domParent = domSelect.parentNode;
