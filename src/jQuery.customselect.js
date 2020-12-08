@@ -75,16 +75,21 @@
 
                 domCheckBoxListDropDown.addEventListener('click', (event) => {
                     const domDropdown = event.target.closest('.customselect-dropdown');
+                    customSelect.closeAllDropdowns();
                     customSelect.toggleDropdown(domDropdown);
-                })
+                });
+
                 document.addEventListener('click', (event) => {
-                    const documentDropdowns = event.target.querySelectorAll('.customselect-dropdown');
-                    const isDropdownElement = event.target.closest('.customselect-dropdown');
-                    if (isDropdownElement === null) {
-                        documentDropdowns.forEach((domDropdown) => {
-                            domDropdown.classList.remove('open');
-                        });
+                    const hasDropDownParent = event.target.closest('.customselect-dropdown') !== null;
+                    if (hasDropDownParent === false) {
+                        customSelect.closeAllDropdowns();
                     }
+                });
+            },
+            closeAllDropdowns: () => {
+                const documentDropdowns = document.querySelectorAll('.customselect-dropdown');
+                documentDropdowns.forEach((domDropdown) => {
+                    domDropdown.classList.remove('open');
                 });
             },
             toggleDropdown: (domDropdown) => {
@@ -255,6 +260,7 @@
                 domCheckboxWrapper.appendChild(domCheckboxList);
                 domParent.appendChild(domCheckboxWrapper);
                 customSelect.triggerInitialState(domCheckboxWrapper);
+
                 if (objDataOptions.style === 'dropdown') {
                     customSelect.bindDropdown(domCheckboxList);
                 }

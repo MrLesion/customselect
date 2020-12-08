@@ -83,17 +83,21 @@
         var domCheckBoxListDropDown = document.getElementById(domCheckboxList.id);
         domCheckBoxListDropDown.addEventListener('click', function (event) {
           var domDropdown = event.target.closest('.customselect-dropdown');
+          customSelect.closeAllDropdowns();
           customSelect.toggleDropdown(domDropdown);
         });
         document.addEventListener('click', function (event) {
-          var documentDropdowns = event.target.querySelectorAll('.customselect-dropdown');
-          var isDropdownElement = event.target.closest('.customselect-dropdown');
+          var hasDropDownParent = event.target.closest('.customselect-dropdown') !== null;
 
-          if (isDropdownElement === null) {
-            documentDropdowns.forEach(function (domDropdown) {
-              domDropdown.classList.remove('open');
-            });
+          if (hasDropDownParent === false) {
+            customSelect.closeAllDropdowns();
           }
+        });
+      },
+      closeAllDropdowns: function closeAllDropdowns() {
+        var documentDropdowns = document.querySelectorAll('.customselect-dropdown');
+        documentDropdowns.forEach(function (domDropdown) {
+          domDropdown.classList.remove('open');
         });
       },
       toggleDropdown: function toggleDropdown(domDropdown) {
