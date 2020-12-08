@@ -1,10 +1,11 @@
 {
-  "name": "customselect",
+  "name": "jquery.customselect",
   "version": "1.0.0",
   "description": "Small plugin to convert selects/multi-selects to lists of radio-inputs / checkbox-inputs with change events and observer for dynamically added markup",
   "author": "Lasse Hove Nielsen <lassehove@lesion.dk> (https://lesion.dk)",
   "scripts": {
-    "watch": "gulp watch"
+    "dev": "gulp dev",
+    "build": "gulp build"
   },
   "license": "MIT",
   "devDependencies": {

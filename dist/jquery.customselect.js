@@ -2,12 +2,12 @@
 
 (function ($) {
   $.fn.customselect = function (options) {
-    var jSelector = this;
     var objOptions = $.extend({
       labelPosition: 'after',
       style: 'list',
       classList: '',
       selectors: ['select-multiple', 'select-one'],
+      parentNode: null,
       observe: true,
       multiSelectedLimit: 3,
       multiSelectedDelimiter: ' | ',
@@ -16,7 +16,7 @@
       dropdownAllSelectedText: 'All selected'
     }, options);
     var customSelect = {
-      _instances: [],
+      _selects: [],
       settings: {
         added: 'custom-select-added'
       },
@@ -68,14 +68,14 @@
           }, false);
         },
         getSelectOptions: function getSelectOptions(dataId) {
-          return customSelect._instances.find(function (i) {
+          return customSelect.__selects.find(function (i) {
             return i.id === dataId;
           });
         }
       },
-      init: function init() {
-        jSelector.each(function (index, domParent) {
-          customSelect.build(domParent, true);
+      init: function init(arrDomSelectors) {
+        Array.from(arrDomSelectors).forEach(function (domSelector) {
+          customSelect.build(domSelector, true);
         });
       },
       bindDropdown: function bindDropdown(domCheckboxList) {
@@ -108,22 +108,24 @@
           domDropdown.classList.add('open');
         }
       },
-      bindListener: function bindListener(domParent) {
+      bindListener: function bindListener(domSelector) {
         var observer = new MutationObserver(function (mutations) {
           mutations.forEach(function (mutation) {
             var newNodes = mutation.addedNodes;
 
             if (newNodes !== null) {
               newNodes.forEach(function (newNode) {
-                var appendedElementsMatchedSelector = newNode.querySelector('select');
+                if (newNode.nodeType === 1) {
+                  var appendedElementsMatchedSelector = newNode.querySelector('select');
 
-                if (newNode.matches('select')) {
-                  appendedElementsMatchedSelector = newNode;
-                }
+                  if (newNode.matches('select')) {
+                    appendedElementsMatchedSelector = newNode;
+                  }
 
-                if (appendedElementsMatchedSelector !== null && appendedElementsMatchedSelector.length > 0) {
-                  if (appendedElementsMatchedSelector.className.indexOf(customSelect.settings.added) === -1) {
-                    customSelect.build(domParent, false);
+                  if (appendedElementsMatchedSelector !== null && appendedElementsMatchedSelector.length > 0) {
+                    if (appendedElementsMatchedSelector.className.indexOf(customSelect.settings.added) === -1) {
+                      customSelect.build(domSelector, false);
+                    }
                   }
                 }
               });
@@ -133,10 +135,10 @@
         var config = {
           childList: true,
           attributes: false,
-          subtree: false,
+          subtree: true,
           characterData: false
         };
-        var targetNode = domParent;
+        var targetNode = domSelector;
         observer.observe(targetNode, config);
       },
       bindEventLink: function bindEventLink(domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions) {
@@ -176,8 +178,75 @@
           }
         });
       },
-      build: function build(domParent, boolInit) {
-        var domAllSelects = Array.from(domParent.querySelectorAll('select'));
+      bindByElement: function bindByElement(domSelect) {
+        var boolInit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+        var domSelector = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+        if (domSelect.className.indexOf(customSelect.settings.added) > -1) {
+          return false;
+        }
+
+        var customSelectID = customSelect.utils.getCustomSelectID(20);
+        var dataOptions = domSelect.dataset;
+        var objDataOptions = Object.assign({}, objOptions);
+        objDataOptions = Object.assign(objDataOptions, dataOptions);
+        var customSelectStyle = customSelect.utils.getSelectStyle(domSelect.type, objDataOptions);
+        var domOptions = Array.from(domSelect.options);
+        var selectedOptions = domOptions.filter(function (o) {
+          return o.selected;
+        });
+
+        customSelect.__selects.push({
+          id: customSelectID,
+          select: domSelect,
+          options: objDataOptions
+        });
+
+        domSelect.dataset.customselectDataId = customSelectID;
+
+        if (objDataOptions.selectors.indexOf(customSelectStyle.type) === -1) {
+          console.error(customSelectStyle.type + ' is not a valid selector for customselect');
+          return false;
+        }
+
+        if (selectedOptions.length === 0 && customSelectStyle.type === 'select-one') {
+          domOptions[0].selected = true;
+        }
+
+        var domCheckboxList = customSelect.utils.createElement(customSelectStyle.list, 'customselect-list ' + objDataOptions.classList);
+        domCheckboxList.id = customSelectID;
+        domCheckboxList.dataset.placeholder = objDataOptions.dropdownEmptyText;
+        domCheckboxList.dataset.type = customSelectStyle.type;
+
+        if (customSelectStyle.dropdown === true) {
+          domCheckboxList.classList.add('customselect-dropdown');
+          var domSelectedOption = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-item customselect-dropdown-text');
+          domCheckboxList.appendChild(domSelectedOption);
+        }
+
+        domOptions.forEach(function (domOption) {
+          var buildedOption = customSelect.buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions);
+          domCheckboxList.appendChild(buildedOption.domInputWrap);
+          customSelect.bindEventLink(buildedOption.domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
+        });
+        customSelect.addToDom(domSelect, domCheckboxList, objDataOptions);
+
+        if (boolInit === true && objOptions.observe === true) {
+          var parentNodeToWatch = null;
+
+          if (objDataOptions.parentNode !== null) {
+            parentNodeToWatch = document.querySelector(objDataOptions.parentNode);
+          } else if (domSelector === null) {
+            parentNodeToWatch = domSelector;
+          } else {
+            parentNodeToWatch = domSelect.parentNode;
+          }
+
+          customSelect.bindListener(parentNodeToWatch);
+        }
+      },
+      bindByParent: function bindByParent(domSelector, boolInit) {
+        var domAllSelects = Array.from(domSelector.querySelectorAll('select'));
         var domSelects = domAllSelects.filter(function (s) {
           return objOptions.selectors.indexOf(s.type) > -1;
         });
@@ -187,58 +256,14 @@
         }
 
         domSelects.forEach(function (domSelect) {
-          if (domSelect.className.indexOf(customSelect.settings.added) > -1) {
-            return false;
-          }
-
-          var customSelectID = customSelect.utils.getCustomSelectID(20);
-          var dataOptions = domSelect.dataset;
-          var objDataOptions = Object.assign({}, objOptions);
-          objDataOptions = Object.assign(objDataOptions, dataOptions);
-          var customSelectStyle = customSelect.utils.getSelectStyle(domSelect.type, objDataOptions);
-          var domOptions = Array.from(domSelect.options);
-          var selectedOptions = domOptions.filter(function (o) {
-            return o.selected;
-          });
-
-          customSelect._instances.push({
-            id: customSelectID,
-            select: domSelect,
-            options: objDataOptions
-          });
-
-          domSelect.dataset.customselectDataId = customSelectID;
-
-          if (objDataOptions.selectors.indexOf(customSelectStyle.type) === -1) {
-            console.error(customSelectStyle.type + ' is not a valid selector for customselect');
-            return false;
-          }
-
-          if (selectedOptions.length === 0 && customSelectStyle.type === 'select-one') {
-            domOptions[0].selected = true;
-          }
-
-          var domCheckboxList = customSelect.utils.createElement(customSelectStyle.list, 'customselect-list ' + objDataOptions.classList);
-          domCheckboxList.id = customSelectID;
-          domCheckboxList.dataset.placeholder = objDataOptions.dropdownEmptyText;
-          domCheckboxList.dataset.type = customSelectStyle.type;
-
-          if (customSelectStyle.dropdown === true) {
-            domCheckboxList.classList.add('customselect-dropdown');
-            var domSelectedOption = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-item customselect-dropdown-text');
-            domCheckboxList.appendChild(domSelectedOption);
-          }
-
-          domOptions.forEach(function (domOption) {
-            var buildedOption = customSelect.buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions);
-            domCheckboxList.appendChild(buildedOption.domInputWrap);
-            customSelect.bindEventLink(buildedOption.domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
-          });
-          customSelect.addToDom(domSelect, domCheckboxList, objDataOptions);
+          customSelect.bindByElement(domSelect, true, domSelector);
         });
-
-        if (boolInit === true && objOptions.observe === true) {
-          customSelect.bindListener(domParent);
+      },
+      build: function build(domSelector, boolInit) {
+        if (objOptions.selectors.indexOf(domSelector.type) === -1) {
+          customSelect.bindByParent(domSelector, true);
+        } else {
+          customSelect.bindByElement(domSelector, true);
         }
       },
       buildDomOption: function buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions) {
@@ -304,7 +329,7 @@
         }
       }
     };
-    customSelect.init();
+    customSelect.init(this);
   };
 })(jQuery);
 ;(function () {

@@ -10,7 +10,7 @@ function style() {
 	return (
 		gulp
 		.src( "src/**/*.scss" )
-		.pipe( sass({outputStyle: 'compressed'}) )
+		.pipe( sass( { outputStyle: 'compressed' } ) )
 		.on( "error", sass.logError )
 
 		.pipe( rename( 'customselect.css' ) )
@@ -30,9 +30,18 @@ function js() {
 		.pipe( gulp.dest( 'dist/' ) );
 }
 
-function watch() {
+function dev(cb) {
 	gulp.watch( 'src/**/*.scss', style )
-	gulp.watch('src/jquery.customselect.js', js);
+	gulp.watch( 'src/jquery.customselect.js', js );
+	cb();
 }
 
-exports.watch = watch;
+function build(cb) {
+	gulp.parallel( style, js );
+	cb();
+}
+
+exports.dev = dev;
+exports.build = build;
+exports.default = dev;
+
