@@ -13,10 +13,11 @@
       dropdownAllSelectedText: 'All selected'
     }, options);
     var customSelect = {
+      _instances: [],
       settings: {
         added: 'custom-select-added',
         dropdown: {
-          selectedLimit: 4
+          selectedLimit: 5
         }
       },
       utils: {
@@ -178,6 +179,17 @@
         }
 
         domSelects.forEach(function (domSelect) {
+          var dataOptions = domSelect.dataset;
+          var customSelectID = customSelect.utils.getCustomSelectID(20);
+          var objDataOptions = $.extend(objOptions, dataOptions);
+          domSelect.dataset.customselectDataId = customSelectID;
+
+          customSelect._instances.push({
+            id: customSelectID,
+            select: domSelect,
+            options: objDataOptions
+          });
+
           var customSelectStyle = customSelect.utils.getSelectStyle(domSelect.type);
           var customSelectName = '';
 
@@ -191,7 +203,7 @@
           }
 
           if (customSelectStyle.type === 'select-one') {
-            customSelectName = customSelect.utils.getCustomSelectID(20);
+            customSelectName = customSelectID;
           }
 
           var domOptions = Array.from(domSelect.options);
