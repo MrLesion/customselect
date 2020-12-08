@@ -75,7 +75,7 @@
 
                 domCheckBoxListDropDown.addEventListener('click', (event) => {
                     const domDropdown = event.target.closest('.customselect-dropdown');
-                    customSelect.closeAllDropdowns();
+                    customSelect.closeAllDropdowns(domDropdown);
                     customSelect.toggleDropdown(domDropdown);
                 });
 
@@ -86,9 +86,9 @@
                     }
                 });
             },
-            closeAllDropdowns: () => {
+            closeAllDropdowns: (currentDomDropdown) => {
                 const documentDropdowns = document.querySelectorAll('.customselect-dropdown');
-                documentDropdowns.forEach((domDropdown) => {
+                Array.from(documentDropdowns).filter(d => d !== currentDomDropdown).forEach((domDropdown) => {
                     domDropdown.classList.remove('open');
                 });
             },
@@ -200,6 +200,7 @@
                     let domCheckboxList = customSelect.utils.createElement(customSelectStyle.list, 'customselect-list ' + objDataOptions.classList);
 
                     domCheckboxList.id = customSelectID;
+                    domCheckboxList.dataset.placeholder = objDataOptions.dropdownEmptyText;
 
                     if (customSelectStyle.dropdown === true) {
                         domCheckboxList.classList.add('customselect-dropdown');

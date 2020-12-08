@@ -83,7 +83,7 @@
         var domCheckBoxListDropDown = document.getElementById(domCheckboxList.id);
         domCheckBoxListDropDown.addEventListener('click', function (event) {
           var domDropdown = event.target.closest('.customselect-dropdown');
-          customSelect.closeAllDropdowns();
+          customSelect.closeAllDropdowns(domDropdown);
           customSelect.toggleDropdown(domDropdown);
         });
         document.addEventListener('click', function (event) {
@@ -94,9 +94,11 @@
           }
         });
       },
-      closeAllDropdowns: function closeAllDropdowns() {
+      closeAllDropdowns: function closeAllDropdowns(currentDomDropdown) {
         var documentDropdowns = document.querySelectorAll('.customselect-dropdown');
-        documentDropdowns.forEach(function (domDropdown) {
+        Array.from(documentDropdowns).filter(function (d) {
+          return d !== currentDomDropdown;
+        }).forEach(function (domDropdown) {
           domDropdown.classList.remove('open');
         });
       },
@@ -225,6 +227,7 @@
 
           var domCheckboxList = customSelect.utils.createElement(customSelectStyle.list, 'customselect-list ' + objDataOptions.classList);
           domCheckboxList.id = customSelectID;
+          domCheckboxList.dataset.placeholder = objDataOptions.dropdownEmptyText;
 
           if (customSelectStyle.dropdown === true) {
             domCheckboxList.classList.add('customselect-dropdown');
