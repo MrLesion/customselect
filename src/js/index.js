@@ -265,26 +265,27 @@
                 domCheckboxOptionLabel.innerText = domOption.text;
                 domCheckboxOptionLabel.htmlFor = strId;
 
-                const domInputWrapElement = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item');
-                const domInputWrap = customSelect.positionLabel(objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, domInputWrapElement);
+
+                const domInputGroup = customSelect.positionLabel(objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel);
                 return {
                     domCheckboxOptionInput: domCheckboxOptionInput,
-                    domInputWrap: domInputWrap
+                    domInputGroup: domInputGroup
                 };
 
             },
-            positionLabel: (labelPosition, input, label, wrapElem) => {
+            positionLabel: (labelPosition, input, label) => {
+                const domInputWrapElement = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item');
                 if (labelPosition === 'before') {
-                    wrapElem.appendChild(label);
-                    wrapElem.appendChild(input);
+                    domInputWrapElement.appendChild(label);
+                    domInputWrapElement.appendChild(input);
                 } else if (labelPosition === 'after') {
-                    wrapElem.appendChild(input);
-                    wrapElem.appendChild(label);
+                    domInputWrapElement.appendChild(input);
+                    domInputWrapElement.appendChild(label);
                 } else {
                     label.appendChild(input);
-                    wrapElem.appendChild(label);
+                    domInputWrapElement.appendChild(label);
                 }
-                return wrapElem;
+                return domInputWrapElement;
             },
             addToDom: (domSelect, domCheckboxList, objDataOptions) => {
                 const domParent = domSelect.parentNode;

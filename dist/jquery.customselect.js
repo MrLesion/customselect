@@ -292,26 +292,27 @@
         var domCheckboxOptionLabel = customSelect.utils.createElement('label', 'customselect-list-label');
         domCheckboxOptionLabel.innerText = domOption.text;
         domCheckboxOptionLabel.htmlFor = strId;
-        var domInputWrapElement = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item');
-        var domInputWrap = customSelect.positionLabel(objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, domInputWrapElement);
+        var domInputGroup = customSelect.positionLabel(objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel);
         return {
           domCheckboxOptionInput: domCheckboxOptionInput,
-          domInputWrap: domInputWrap
+          domInputGroup: domInputGroup
         };
       },
-      positionLabel: function positionLabel(labelPosition, input, label, wrapElem) {
+      positionLabel: function positionLabel(labelPosition, input, label) {
+        var domInputWrapElement = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item');
+
         if (labelPosition === 'before') {
-          wrapElem.appendChild(label);
-          wrapElem.appendChild(input);
+          domInputWrapElement.appendChild(label);
+          domInputWrapElement.appendChild(input);
         } else if (labelPosition === 'after') {
-          wrapElem.appendChild(input);
-          wrapElem.appendChild(label);
+          domInputWrapElement.appendChild(input);
+          domInputWrapElement.appendChild(label);
         } else {
           label.appendChild(input);
-          wrapElem.appendChild(label);
+          domInputWrapElement.appendChild(label);
         }
 
-        return wrapElem;
+        return domInputWrapElement;
       },
       addToDom: function addToDom(domSelect, domCheckboxList, objDataOptions) {
         var domParent = domSelect.parentNode;
