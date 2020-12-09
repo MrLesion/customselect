@@ -173,18 +173,18 @@
             var selectedTextNode = domDropdown.querySelector('.customselect-dropdown-text');
 
             if (selectedOptions.length === 0) {
-              selectedTextNode.innerText = objDataOptions.dropdownEmptyText;
+              selectedTextNode.innerText = objDataOptions.emptyText;
             } else {
               var selectedOptionsText = selectedOptions.map(function (o) {
                 return o.textContent;
               }).filter(function (v) {
                 return v;
-              }).join(objDataOptions.multiSelectedDelimiter);
+              }).join(objDataOptions.selectedDelimiter);
 
-              if (selectedOptions.length > objDataOptions.multiSelectedLimit && selectedOptions.length < domOptions.length) {
-                selectedOptionsText = selectedOptions.length + ' ' + objDataOptions.dropdownSelectedText;
+              if (selectedOptions.length > objDataOptions.selectedLimit && selectedOptions.length < domOptions.length) {
+                selectedOptionsText = selectedOptions.length + ' ' + objDataOptions.selectedText;
               } else if (selectedOptions.length === domOptions.length) {
-                selectedOptionsText = objDataOptions.dropdownAllSelectedText;
+                selectedOptionsText = objDataOptions.allSelectedText;
               }
 
               selectedTextNode.innerText = selectedOptionsText;
@@ -226,7 +226,7 @@
 
         var domCheckboxList = customSelect.utils.createElement(customSelectStyle.list, 'customselect-list ' + objDataOptions.classList);
         domCheckboxList.id = customSelectID;
-        domCheckboxList.dataset.placeholder = objDataOptions.dropdownEmptyText;
+        domCheckboxList.dataset.placeholder = objDataOptions.emptyText;
         domCheckboxList.dataset.type = customSelectStyle.type;
         console.log(customSelectStyle.dropdown);
 
@@ -343,11 +343,11 @@
     selectors: ['select-multiple', 'select-one'],
     parentNode: null,
     observe: true,
-    multiSelectedLimit: 3,
-    multiSelectedDelimiter: ' | ',
-    dropdownEmptyText: 'Nothing selected',
-    dropdownSelectedText: 'selected',
-    dropdownAllSelectedText: 'All selected'
+    selectedLimit: 3,
+    selectedDelimiter: ' | ',
+    emptyText: 'Nothing selected',
+    selectedText: 'selected',
+    allSelectedText: 'All selected'
   };
 })(jQuery);
 ;(function () {
