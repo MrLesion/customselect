@@ -289,27 +289,27 @@
           domCheckboxOptionInput.name = strCustomSelectName;
         }
 
-        var domCheckboxOptionLabel = customSelect.utils.createElement('label', 'customselect-list-label');
-        domCheckboxOptionLabel.innerText = domOption.text;
-        domCheckboxOptionLabel.htmlFor = strId;
-        var domInputGroup = customSelect.positionLabel(objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel);
+        var domInputGroup = customSelect.positionLabel(objDataOptions.labelPosition, domCheckboxOptionInput);
         return {
           domCheckboxOptionInput: domCheckboxOptionInput,
           domInputGroup: domInputGroup
         };
       },
-      positionLabel: function positionLabel(labelPosition, input, label) {
+      positionLabel: function positionLabel(strLabelPosition, domCheckboxOptionInput) {
         var domInputWrapElement = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item');
+        var domCheckboxOptionLabel = customSelect.utils.createElement('label', 'customselect-list-label');
+        domCheckboxOptionLabel.innerText = domOption.text;
+        domCheckboxOptionLabel.htmlFor = strId;
 
-        if (labelPosition === 'before') {
-          domInputWrapElement.appendChild(label);
-          domInputWrapElement.appendChild(input);
-        } else if (labelPosition === 'after') {
-          domInputWrapElement.appendChild(input);
-          domInputWrapElement.appendChild(label);
+        if (strLabelPosition === 'before') {
+          domInputWrapElement.appendChild(domCheckboxOptionLabel);
+          domInputWrapElement.appendChild(domCheckboxOptionInput);
+        } else if (strLabelPosition === 'after') {
+          domInputWrapElement.appendChild(domCheckboxOptionInput);
+          domInputWrapElement.appendChild(domCheckboxOptionLabel);
         } else {
-          label.appendChild(input);
-          domInputWrapElement.appendChild(label);
+          domCheckboxOptionLabel.appendChild(domCheckboxOptionInput);
+          domInputWrapElement.appendChild(domCheckboxOptionLabel);
         }
 
         return domInputWrapElement;
