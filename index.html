@@ -6,7 +6,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>jQuery Custom Select</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <link rel="stylesheet" href="dist/customselect.css">
+        <link rel="stylesheet" href="dist/jquery.customselect.css">
     </head>
 
     <body>
@@ -16,7 +16,7 @@
                     <div class="customselect-parent-node">
                         <div class="multi-form-element">
                             <label for="multi">Multi-select</label>
-                            <select name="multi" id="multi" multiple data-dropdown-empty-text="Please choose options">
+                            <select name="multi" id="multi" multiple data-dropdown-empty-text="Please choose options" data-dropdown="true">
                                 <option value="1">Multi-select 1</option>
                                 <option value="2">Multi-select 2</option>
                                 <option value="3">Multi-select 3</option>
@@ -72,12 +72,7 @@
         <script src="src/test.js"></script>
         <script>
         jQuery( document ).ready( function () {
-            jQuery( 'select' ).customselect( {
-                parentNode: '.js-test-container',
-                labelPosition: 'after',
-                style: 'dropdown',
-                observe: true
-            } );
+            jQuery( 'select' ).customselect();
         } );
         </script>
     </body>
