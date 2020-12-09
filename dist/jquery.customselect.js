@@ -2,21 +2,9 @@
 
 (function ($) {
   $.fn.customselect = function (options) {
-    var objOptions = $.extend({
-      labelPosition: 'after',
-      style: 'list',
-      classList: '',
-      selectors: ['select-multiple', 'select-one'],
-      parentNode: null,
-      observe: true,
-      multiSelectedLimit: 3,
-      multiSelectedDelimiter: ' | ',
-      dropdownEmptyText: 'Nothing selected',
-      dropdownSelectedText: 'selected',
-      dropdownAllSelectedText: 'All selected'
-    }, options);
+    var objOptions = $.extend({}, $.fn.customselect.defaults, options);
     var customSelect = {
-      _selects: [],
+      _instances: [],
       settings: {
         added: 'custom-select-added'
       },
@@ -68,7 +56,7 @@
           }, false);
         },
         getSelectOptions: function getSelectOptions(dataId) {
-          return customSelect.__selects.find(function (i) {
+          return customSelect._instances.find(function (i) {
             return i.id === dataId;
           });
         }
@@ -196,7 +184,7 @@
           return o.selected;
         });
 
-        customSelect.__selects.push({
+        customSelect._instances.push({
           id: customSelectID,
           select: domSelect,
           options: objDataOptions
@@ -231,7 +219,7 @@
         });
         customSelect.addToDom(domSelect, domCheckboxList, objDataOptions);
 
-        if (boolInit === true && objOptions.observe === true) {
+        if (boolInit === true && objDataOptions.observe === true) {
           var parentNodeToWatch = null;
 
           if (objDataOptions.parentNode !== null) {
@@ -330,6 +318,20 @@
       }
     };
     customSelect.init(this);
+  };
+
+  $.fn.customselect.defaults = {
+    labelPosition: 'after',
+    style: 'list',
+    classList: '',
+    selectors: ['select-multiple', 'select-one'],
+    parentNode: null,
+    observe: true,
+    multiSelectedLimit: 3,
+    multiSelectedDelimiter: ' | ',
+    dropdownEmptyText: 'Nothing selected',
+    dropdownSelectedText: 'selected',
+    dropdownAllSelectedText: 'All selected'
   };
 })(jQuery);
 ;(function () {

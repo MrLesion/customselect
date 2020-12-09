@@ -1,21 +1,10 @@
 ( function ( $ ) {
     $.fn.customselect = function ( options ) {
-        const objOptions = $.extend( {
-            labelPosition: 'after',
-            style: 'list',
-            classList: '',
-            selectors: [ 'select-multiple', 'select-one' ],
-            parentNode: null,
-            observe: true,
-            multiSelectedLimit: 3,
-            multiSelectedDelimiter: ' | ',
-            dropdownEmptyText: 'Nothing selected',
-            dropdownSelectedText: 'selected',
-            dropdownAllSelectedText: 'All selected'
-        }, options );
+
+        const objOptions = $.extend( {}, $.fn.customselect.defaults, options );
 
         const customSelect = {
-            _selects: [],
+            _instances: [],
             settings: {
                 added: 'custom-select-added'
             },
@@ -61,7 +50,7 @@
                     }, false );
                 },
                 getSelectOptions: ( dataId ) => {
-                    return customSelect.__selects.find( i => i.id === dataId );
+                    return customSelect._instances.find( i => i.id === dataId );
                 }
             },
             init: ( arrDomSelectors ) => {
@@ -171,7 +160,7 @@
                 const domOptions = Array.from( domSelect.options );
                 const selectedOptions = domOptions.filter( o => o.selected );
 
-                customSelect.__selects.push( { id: customSelectID, select: domSelect, options: objDataOptions } );
+                customSelect._instances.push( { id: customSelectID, select: domSelect, options: objDataOptions } );
                 domSelect.dataset.customselectDataId = customSelectID;
 
                 if ( objDataOptions.selectors.indexOf( customSelectStyle.type ) === -1 ) {
@@ -204,7 +193,7 @@
 
                 customSelect.addToDom( domSelect, domCheckboxList, objDataOptions );
 
-                if ( boolInit === true && objOptions.observe === true ) {
+                if ( boolInit === true && objDataOptions.observe === true ) {
                     let parentNodeToWatch = null;
                     if ( objDataOptions.parentNode !== null ) {
                         parentNodeToWatch = document.querySelector( objDataOptions.parentNode );
@@ -299,5 +288,19 @@
             }
         };
         customSelect.init( this );
+    };
+
+    $.fn.customselect.defaults = {
+        labelPosition: 'after',
+        style: 'list',
+        classList: '',
+        selectors: [ 'select-multiple', 'select-one' ],
+        parentNode: null,
+        observe: true,
+        multiSelectedLimit: 3,
+        multiSelectedDelimiter: ' | ',
+        dropdownEmptyText: 'Nothing selected',
+        dropdownSelectedText: 'selected',
+        dropdownAllSelectedText: 'All selected'
     };
 }( jQuery ) );
