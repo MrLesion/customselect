@@ -71,8 +71,9 @@
         <script src="dist/jquery.customselect.js"></script>
         <script src="src/test.js"></script>
         <script>
-        jQuery( document ).ready( function () {
-            jQuery( 'select' ).customselect();
+        jQuery( 'body' ).customselect( {
+            selectors: ['select-multiple'],
+            style: 'list'
         } );
         </script>
     </body>

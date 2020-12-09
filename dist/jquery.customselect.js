@@ -63,7 +63,9 @@
 
           return returnObj;
         },
-        getObserverSelector: function getObserverSelector(objDataOptions, domSelector, domSelect) {
+        getObserverSelector: function getObserverSelector(objDataOptions) {
+          var domSelector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+          var domSelect = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
           var parentNodeToWatch = null;
 
           if (objDataOptions.parentNode !== null) {
@@ -228,7 +230,6 @@
         domCheckboxList.id = customSelectID;
         domCheckboxList.dataset.placeholder = objDataOptions.emptyText;
         domCheckboxList.dataset.type = customSelectStyle.type;
-        console.log(customSelectStyle.dropdown);
 
         if (customSelect.utils.tryParseBool(customSelectStyle.dropdown) === true) {
           domCheckboxList.classList.add('customselect-dropdown');
@@ -244,7 +245,7 @@
         customSelect.addToDom(domSelect, domCheckboxList, objDataOptions);
 
         if (boolInit === true && customSelect.utils.tryParseBool(objDataOptions.observe) === true) {
-          var parentNodeToWatch = customSelect.utils.getObserverSelector(objDataOptions, domSelector, domSelect);
+          var parentNodeToWatch = customSelect.utils.getObserverSelector(objOptions, domSelector, domSelect);
           customSelect.bindObserver(parentNodeToWatch);
         }
       },
@@ -254,7 +255,12 @@
           return objOptions.selectors.indexOf(s.type) > -1;
         });
 
-        if (domSelects === null) {
+        if (domSelects.length === 0) {
+          if (boolInit === true && customSelect.utils.tryParseBool(objOptions.observe) === true) {
+            var parentNodeToWatch = customSelect.utils.getObserverSelector(objOptions, domSelector);
+            customSelect.bindObserver(parentNodeToWatch);
+          }
+
           return false;
         }
 
@@ -264,9 +270,9 @@
       },
       buildDomList: function buildDomList(domSelector, boolInit) {
         if (objOptions.selectors.indexOf(domSelector.type) === -1) {
-          customSelect.bindByParent(domSelector, true);
+          customSelect.bindByParent(domSelector, boolInit);
         } else {
-          customSelect.bindByElement(domSelector, true);
+          customSelect.bindByElement(domSelector, boolInit);
         }
       },
       buildDomOption: function buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions) {

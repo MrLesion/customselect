@@ -53,7 +53,7 @@
                     }
                     return returnObj;
                 },
-                getObserverSelector: (objDataOptions, domSelector, domSelect) => {
+                getObserverSelector: (objDataOptions, domSelector = null, domSelect = null) => {
                     let parentNodeToWatch = null;
                     if (objDataOptions.parentNode !== null) {
                         parentNodeToWatch = document.querySelector(objDataOptions.parentNode);
@@ -146,6 +146,7 @@
 
             },
             bindEventLink: (domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions) => {
+
                 domCheckboxOptionInput.addEventListener('change', (event) => {
                     domOptions.find(o => o.value === event.target.value).selected = event.target.checked;
 
@@ -202,7 +203,6 @@
                 domCheckboxList.id = customSelectID;
                 domCheckboxList.dataset.placeholder = objDataOptions.emptyText;
                 domCheckboxList.dataset.type = customSelectStyle.type;
-                console.log(customSelectStyle.dropdown);
                 if (customSelect.utils.tryParseBool(customSelectStyle.dropdown) === true) {
                     domCheckboxList.classList.add('customselect-dropdown');
                     let domSelectedOption = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-item customselect-dropdown-text');
@@ -218,30 +218,33 @@
 
                 customSelect.addToDom(domSelect, domCheckboxList, objDataOptions);
 
-
-
-
                 if (boolInit === true && customSelect.utils.tryParseBool(objDataOptions.observe) === true) {
-                    let parentNodeToWatch = customSelect.utils.getObserverSelector(objDataOptions, domSelector, domSelect);
+                    let parentNodeToWatch = customSelect.utils.getObserverSelector(objOptions, domSelector, domSelect);
                     customSelect.bindObserver(parentNodeToWatch);
                 }
+
             },
             bindByParent: (domSelector, boolInit) => {
                 const domAllSelects = Array.from(domSelector.querySelectorAll('select'));
                 const domSelects = domAllSelects.filter(s => objOptions.selectors.indexOf(s.type) > -1);
 
-                if (domSelects === null) {
+                if (domSelects.length === 0) {
+                    if (boolInit === true && customSelect.utils.tryParseBool(objOptions.observe) === true) {
+                        let parentNodeToWatch = customSelect.utils.getObserverSelector(objOptions, domSelector);
+                        customSelect.bindObserver(parentNodeToWatch);
+                    }
                     return false;
                 }
                 domSelects.forEach((domSelect) => {
                     customSelect.bindByElement(domSelect, true, domSelector);
+
                 });
             },
             buildDomList: (domSelector, boolInit) => {
                 if (objOptions.selectors.indexOf(domSelector.type) === -1) {
-                    customSelect.bindByParent(domSelector, true);
+                    customSelect.bindByParent(domSelector, boolInit);
                 } else {
-                    customSelect.bindByElement(domSelector, true);
+                    customSelect.bindByElement(domSelector, boolInit);
                 }
             },
             buildDomOption: (domOption, customSelectID, customSelectStyle, objDataOptions) => {
