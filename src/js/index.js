@@ -8,7 +8,7 @@
                 added: 'customselect-added'
             },
             utils: {
-                tryParseBool: (strBool) => {
+                parseBool: (strBool) => {
                     let bool;
                     if (typeof strBool === 'boolean') {
                         return strBool;
@@ -45,7 +45,7 @@
                         list: 'div',
                         item: 'div',
                         type: customSelectType,
-                        dropdown: customSelect.utils.tryParseBool(objDataOptions.dropdown)
+                        dropdown: customSelect.utils.parseBool(objDataOptions.dropdown)
                     };
                     if (objDataOptions.style === 'list') {
                         returnObj.list = 'ul';
@@ -116,44 +116,46 @@
                     }
                 }
             },
-            bindObserver: (domSelector) => {
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        let newNodes = mutation.addedNodes;
-                        if (newNodes !== null) {
-                            newNodes.forEach((newNode) => {
-                                if (newNode.nodeType === 1) {
-                                    let appendedElementsMatchedSelector = newNode.querySelector('select');
-                                    if (newNode.matches('select')) {
-                                        appendedElementsMatchedSelector = newNode;
-                                    }
-                                    if (appendedElementsMatchedSelector !== null && appendedElementsMatchedSelector.length > 0) {
-                                        if (appendedElementsMatchedSelector.className.indexOf(customSelect.constants.added) === -1) {
-                                            customSelect.buildDomList(domSelector, false);
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    });
-                });
-                const config = {
+            observer: {
+                config: {
                     childList: true,
                     attributes: false,
                     subtree: true,
                     characterData: false
-                };
-                if (domSelector.nodeType === 1) {
-                    observer.observe(domSelector, config);
+                },
+                bind: (domSelector) => {
+                    const observer = new MutationObserver(function(mutations) {
+                        mutations.forEach(function(mutation) {
+                            customSelect.observer.callback(mutation, domSelector);
+                        });
+                    });
+                    if (domSelector.nodeType === 1) {
+                        observer.observe(domSelector, customSelect.observer.config);
+                    }
+                },
+                callback: (mutation, domSelector) => {
+                    if (mutation.addedNodes !== null) {
+                        mutation.addedNodes.forEach((newNode) => {
+                            if (newNode.nodeType === 1) {
+                                let appendedElementsMatchedSelector = newNode.querySelector('select');
+                                if (newNode.matches('select')) {
+                                    appendedElementsMatchedSelector = newNode;
+                                }
+                                if (appendedElementsMatchedSelector !== null && appendedElementsMatchedSelector.length > 0) {
+                                    if (appendedElementsMatchedSelector.className.indexOf(customSelect.constants.added) === -1) {
+                                        customSelect.buildDomList(domSelector, false);
+                                    }
+                                }
+                            }
+                        });
+                    }
                 }
-
             },
-            bindEventLink: (domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions) => {
-
+            bindEvents: (domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions) => {
                 domCheckboxOptionInput.addEventListener('change', (event) => {
                     domOptions.find(o => o.value === event.target.value).selected = event.target.checked;
 
-                    if (customSelect.utils.tryParseBool(customSelectStyle.dropdown) === true) {
+                    if (customSelect.utils.parseBool(customSelectStyle.dropdown) === true) {
                         const domDropdown = domCheckboxOptionInput.closest('.customselect-dropdown');
                         let selectedOptions = domOptions.filter(o => o.selected === true);
                         let selectedTextNode = domDropdown.querySelector('.customselect-dropdown-text');
@@ -206,7 +208,7 @@
                 domCheckboxList.id = customSelectID;
                 domCheckboxList.dataset.placeholder = objDataOptions.emptyText;
                 domCheckboxList.dataset.type = customSelectStyle.type;
-                if (customSelect.utils.tryParseBool(customSelectStyle.dropdown) === true) {
+                if (customSelect.utils.parseBool(customSelectStyle.dropdown) === true) {
                     domCheckboxList.classList.add('customselect-dropdown');
                     let domSelectedOption = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-item customselect-dropdown-text');
                     domCheckboxList.appendChild(domSelectedOption);
@@ -215,15 +217,15 @@
                 domOptions.forEach((domOption) => {
                     const buildedOption = customSelect.buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions);
                     domCheckboxList.appendChild(buildedOption.domInputGroup);
-                    customSelect.bindEventLink(buildedOption.domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
+                    customSelect.bindEvents(buildedOption.domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
 
                 });
 
                 customSelect.addToDom(domSelect, domCheckboxList, objDataOptions);
 
-                if (boolInit === true && customSelect.utils.tryParseBool(objDataOptions.observe) === true) {
+                if (boolInit === true && customSelect.utils.parseBool(objDataOptions.observe) === true) {
                     let parentNodeToWatch = customSelect.utils.getObserverSelector(objOptions, domSelector, domSelect);
-                    customSelect.bindObserver(parentNodeToWatch);
+                    customSelect.observer.bind(parentNodeToWatch);
                 }
 
             },
@@ -232,9 +234,9 @@
                 const domSelects = domAllSelects.filter(s => objOptions.targetTypes.indexOf(s.type) > -1);
 
                 if (domSelects.length === 0) {
-                    if (boolInit === true && customSelect.utils.tryParseBool(objOptions.observe) === true) {
+                    if (boolInit === true && customSelect.utils.parseBool(objOptions.observe) === true) {
                         let parentNodeToWatch = customSelect.utils.getObserverSelector(objOptions, domSelector);
-                        customSelect.bindObserver(parentNodeToWatch);
+                        customSelect.observer.bind(parentNodeToWatch);
                     }
                     return false;
                 }
@@ -300,7 +302,7 @@
                 domParent.appendChild(domCheckboxWrapper);
                 customSelect.triggerInitialState(domCheckboxWrapper);
 
-                if (customSelect.utils.tryParseBool(objDataOptions.dropdown) === true) {
+                if (customSelect.utils.parseBool(objDataOptions.dropdown) === true) {
                     customSelect.dropdown.bindEvents(domCheckboxList);
                 }
 
