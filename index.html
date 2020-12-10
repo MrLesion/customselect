@@ -1,81 +1,92 @@
 <!DOCTYPE html>
 <html>
 
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>jQuery Custom Select</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <link rel="stylesheet" href="dist/jquery.customselect.css">
-    </head>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>jQuery Custom Select</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="dist/jquery.customselect.css">
+</head>
 
-    <body>
-        <div class="container js-test-container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="customselect-parent-node">
-                        <div class="multi-form-element">
-                            <label for="multi">Multi-select</label>
-                            <select name="multi" id="multi" multiple data-empty-text="Please choose options" data-dropdown="true">
-                                <option value="1">Multi-select 1</option>
-                                <option value="2">Multi-select 2</option>
-                                <option value="3">Multi-select 3</option>
-                                <option value="4">Multi-select 4</option>
-                                <option value="5">Multi-select. 5</option>
-                                <option value="6">Multi-select 6</option>
-                            </select>
-                        </div>
-                        <hr />
-                        <div class="multi-form-element">
-                            <label>Multi-select</label>
-                            <select name="lala" id="lala" multiple data-empty-text="Bum chalaka" data-style="list">
-                                <option value="1">Multi-select 1</option>
-                                <option value="2">Multi-select 2</option>
-                                <option value="3">Multi-select 3</option>
-                                <option value="4">Multi-select 4</option>
-                                <option value="5">Multi-select. 5</option>
-                                <option value="6">Multi-select 6</option>
-                            </select>
-                        </div>
-                        <hr />
-                        <div class="single-form-element">
-                            <label>Select</label>
-                            <select name="sinsdfgle" id="sdf">
-                                <option value="1">Select 1</option>
-                                <option value="2">Select 2</option>
-                                <option value="3">Select 3</option>
-                                <option value="4">Select 4</option>
-                                <option value="5">Select 5</option>
-                                <option value="6">Select 6</option>
-                            </select>
-                        </div>
-                        <hr />
-                        <div class="single-form-element">
-                            <label>Select</label>
-                            <select name="single" id="single">
-                                <option value="">Tøs</option>
-                                <option value="2">Select 2</option>
-                                <option value="3">Select 3</option>
-                                <option value="4">Select 4</option>
-                                <option value="5">Select 5</option>
-                                <option value="6">Select 6</option>
-                            </select>
-                        </div>
-                        <div class="hbs-container"></div>
+<body>
+    <div class="container js-test-container">
+        <div class="row">
+            <div class="col-12">
+                <div class="customselect-parent-node">
+                    <div class="multi-form-element">
+                        <label for="multi">Multi-select</label>
+                        <select name="multi" id="multi" multiple data-empty-text="Please choose options" data-dropdown="true">
+                            <option value="1">Multi-select 1</option>
+                            <option value="2">Multi-select 2</option>
+                            <option value="3">Multi-select 3</option>
+                            <option value="4">Multi-select 4</option>
+                            <option value="5">Multi-select. 5</option>
+                            <option value="6">Multi-select 6</option>
+                        </select>
                     </div>
+                    <hr />
+                    <div class="multi-form-element">
+                        <label>Multi-select</label>
+                        <select name="lala" id="lala" multiple data-empty-text="Bum chalaka" data-style="list">
+                            <option value="1">Multi-select 1</option>
+                            <option value="2">Multi-select 2</option>
+                            <option value="3">Multi-select 3</option>
+                            <option value="4">Multi-select 4</option>
+                            <option value="5">Multi-select. 5</option>
+                            <option value="6">Multi-select 6</option>
+                        </select>
+                    </div>
+                    <hr />
+                    <div class="single-form-element">
+                        <label>Select</label>
+                        <select name="sinsdfgle" id="sdf">
+                            <option value="1">Select 1</option>
+                            <option value="2">Select 2</option>
+                            <option value="3">Select 3</option>
+                            <option value="4">Select 4</option>
+                            <option value="5">Select 5</option>
+                            <option value="6">Select 6</option>
+                        </select>
+                    </div>
+                    <hr />
+                    <div class="single-form-element">
+                        <label>Select</label>
+                        <select name="single" id="single">
+                            <option value="">Tøs</option>
+                            <option value="2">Select 2</option>
+                            <option value="3">Select 3</option>
+                            <option value="4">Select 4</option>
+                            <option value="5">Select 5</option>
+                            <option value="6">Select 6</option>
+                        </select>
+                    </div>
+                    <div class="hbs-container"></div>
                 </div>
             </div>
         </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
-        <script src="dist/jquery.customselect.js"></script>
-        <script src="src/test.js"></script>
-        <script>
-        jQuery( 'body' ).customselect( {
-            targets: ['select-multiple'],
-            style: 'list'
-        } );
-        </script>
-    </body>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script src="dist/jquery.customselect.js"></script>
+    <script src="src/test.js"></script>
+    <script>
+    //Defaults
+    jQuery('body').customselect({
+        labelPosition: 'after', // after | before | wrap
+        style: 'list', // list | none
+        dropdown: false, // true | false
+        classList: '', // string
+        targetTypes: ['select-multiple', 'select-one'], // select-multiple | select-one
+        parentNode: null, // null | selector
+        observe: true, // true | false
+        selectedLimit: 3, // number
+        selectedDelimiter: ' | ', // string
+        emptyText: 'Nothing selected', // string
+        selectedText: 'selected', // string
+        allSelectedText: 'All selected' // string
+    });
+    </script>
+</body>
 
 </html>

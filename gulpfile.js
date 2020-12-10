@@ -18,7 +18,6 @@ function style() {
         .src(paths.scss)
         .pipe(sass({ outputStyle: 'compressed' }))
         .on("error", sass.logError)
-
         .pipe(rename('jquery.customselect.css'))
         .pipe(gulp.dest(paths.dist))
     );
@@ -43,7 +42,7 @@ function dev(cb) {
 };
 
 function build(cb) {
-    gulp.parallel(style, js);
+    gulp.series(style, js);
     cb();
 };
 

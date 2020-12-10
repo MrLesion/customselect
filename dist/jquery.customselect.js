@@ -4,8 +4,8 @@
   $.fn.customselect = function (options) {
     var objOptions = $.extend({}, $.fn.customselect.defaults, options);
     var customSelect = {
-      settings: {
-        added: 'custom-select-added'
+      constants: {
+        added: 'customselect-added'
       },
       utils: {
         tryParseBool: function tryParseBool(strBool) {
@@ -15,7 +15,7 @@
             return strBool;
           }
 
-          bool = function () {
+          bool = (function () {
             switch (false) {
               case strBool.toLowerCase() !== 'true':
                 return true;
@@ -23,7 +23,7 @@
               case strBool.toLowerCase() !== 'false':
                 return false;
             }
-          }();
+          })();
 
           if (typeof bool === 'boolean') {
             return bool;
@@ -78,52 +78,46 @@
 
           return parentNodeToWatch;
         },
-        delegate: function delegate(event, selector, fnCallback) {
-          document.addEventListener(event, function (e) {
-            for (var target = e.target; target && target !== this; target = target.parentNode) {
-              if (target.matches(selector)) {
-                fnCallback.call(target, e);
-                break;
-              }
-            }
-          }, false);
+        trigger: function trigger(strTriggerEvent, domElements) {
+          var event = new Event(strTriggerEvent);
+
+          if (domElements instanceof NodeList) {
+            domElements.forEach((function (domElm) {
+              domElm.dispatchEvent(event);
+            }));
+          } else {
+            domElements.dispatchEvent(event);
+          }
         }
       },
       init: function init(arrDomSelectors) {
-        Array.from(arrDomSelectors).forEach(function (domSelector) {
+        Array.from(arrDomSelectors).forEach((function (domSelector) {
           customSelect.buildDomList(domSelector, true);
-        });
+        }));
       },
       dropdown: {
         bindEvents: function bindEvents(domCheckboxList) {
           var domCheckBoxListDropDown = document.getElementById(domCheckboxList.id);
-          domCheckBoxListDropDown.addEventListener('click', function (event) {
+          domCheckBoxListDropDown.addEventListener('click', (function (event) {
             var domDropdown = event.target.closest('.customselect-dropdown');
             customSelect.dropdown.closeAll(domDropdown);
             customSelect.dropdown.toggle(domDropdown);
-          });
-          document.addEventListener('click', function (event) {
+          }));
+          document.addEventListener('click', (function (event) {
             var hasDropDownParent = event.target.closest('.customselect-dropdown') !== null;
 
             if (hasDropDownParent === false) {
               customSelect.dropdown.closeAll();
             }
-          });
-          customSelect.utils.delegate('click', '.custom-select-added', function (event) {
-            var hasDropDownParent = event.target.closest('.customselect-dropdown') !== null;
-
-            if (hasDropDownParent === false) {
-              customSelect.dropdown.closeAll();
-            }
-          });
+          }));
         },
         closeAll: function closeAll(currentDomDropdown) {
           var documentDropdowns = document.querySelectorAll('.customselect-dropdown');
-          Array.from(documentDropdowns).filter(function (d) {
+          Array.from(documentDropdowns).filter((function (d) {
             return d !== currentDomDropdown;
-          }).forEach(function (domDropdown) {
+          })).forEach((function (domDropdown) {
             domDropdown.classList.remove('open');
-          });
+          }));
         },
         toggle: function toggle(domDropdown) {
           if (domDropdown.className.indexOf('open') > -1) {
@@ -135,11 +129,11 @@
       },
       bindObserver: function bindObserver(domSelector) {
         var observer = new MutationObserver(function (mutations) {
-          mutations.forEach(function (mutation) {
+          mutations.forEach((function (mutation) {
             var newNodes = mutation.addedNodes;
 
             if (newNodes !== null) {
-              newNodes.forEach(function (newNode) {
+              newNodes.forEach((function (newNode) {
                 if (newNode.nodeType === 1) {
                   var appendedElementsMatchedSelector = newNode.querySelector('select');
 
@@ -148,14 +142,14 @@
                   }
 
                   if (appendedElementsMatchedSelector !== null && appendedElementsMatchedSelector.length > 0) {
-                    if (appendedElementsMatchedSelector.className.indexOf(customSelect.settings.added) === -1) {
+                    if (appendedElementsMatchedSelector.className.indexOf(customSelect.constants.added) === -1) {
                       customSelect.buildDomList(domSelector, false);
                     }
                   }
                 }
-              });
+              }));
             }
-          });
+          }));
         });
         var config = {
           childList: true,
@@ -169,26 +163,26 @@
         }
       },
       bindEventLink: function bindEventLink(domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions) {
-        domCheckboxOptionInput.addEventListener('change', function (event) {
-          domOptions.find(function (o) {
+        domCheckboxOptionInput.addEventListener('change', (function (event) {
+          domOptions.find((function (o) {
             return o.value === event.target.value;
-          }).selected = event.target.checked;
+          })).selected = event.target.checked;
 
           if (customSelect.utils.tryParseBool(customSelectStyle.dropdown) === true) {
             var domDropdown = domCheckboxOptionInput.closest('.customselect-dropdown');
-            var selectedOptions = domOptions.filter(function (o) {
+            var selectedOptions = domOptions.filter((function (o) {
               return o.selected === true;
-            });
+            }));
             var selectedTextNode = domDropdown.querySelector('.customselect-dropdown-text');
 
             if (selectedOptions.length === 0) {
               selectedTextNode.innerText = objDataOptions.emptyText;
             } else {
-              var selectedOptionsText = selectedOptions.map(function (o) {
+              var selectedOptionsText = selectedOptions.map((function (o) {
                 return o.textContent;
-              }).filter(function (v) {
+              })).filter((function (v) {
                 return v;
-              }).join(objDataOptions.selectedDelimiter);
+              })).join(objDataOptions.selectedDelimiter);
 
               if (selectedOptions.length > objDataOptions.selectedLimit && selectedOptions.length < domOptions.length) {
                 selectedOptionsText = selectedOptions.length + ' ' + objDataOptions.selectedText;
@@ -203,13 +197,13 @@
               domDropdown.classList.remove('open');
             }
           }
-        });
+        }));
       },
       bindByElement: function bindByElement(domSelect) {
         var boolInit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
         var domSelector = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
-        if (domSelect.className.indexOf(customSelect.settings.added) > -1) {
+        if (domSelect.className.indexOf(customSelect.constants.added) > -1) {
           return false;
         }
 
@@ -219,12 +213,12 @@
         objDataOptions = Object.assign(objDataOptions, dataOptions);
         var customSelectStyle = customSelect.utils.getSelectStyle(domSelect.type, objDataOptions);
         var domOptions = Array.from(domSelect.options);
-        var selectedOptions = domOptions.filter(function (o) {
+        var selectedOptions = domOptions.filter((function (o) {
           return o.selected;
-        });
+        }));
         domSelect.dataset.customselectDataId = customSelectID;
 
-        if (objDataOptions.targets.indexOf(customSelectStyle.type) === -1) {
+        if (objDataOptions.targetTypes.indexOf(customSelectStyle.type) === -1) {
           console.warn(customSelectStyle.type + ' is not a valid selector for customselect');
           return false;
         }
@@ -244,11 +238,11 @@
           domCheckboxList.appendChild(domSelectedOption);
         }
 
-        domOptions.forEach(function (domOption) {
+        domOptions.forEach((function (domOption) {
           var buildedOption = customSelect.buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions);
           domCheckboxList.appendChild(buildedOption.domInputGroup);
           customSelect.bindEventLink(buildedOption.domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
-        });
+        }));
         customSelect.addToDom(domSelect, domCheckboxList, objDataOptions);
 
         if (boolInit === true && customSelect.utils.tryParseBool(objDataOptions.observe) === true) {
@@ -258,9 +252,9 @@
       },
       bindByParent: function bindByParent(domSelector, boolInit) {
         var domAllSelects = Array.from(domSelector.querySelectorAll('select'));
-        var domSelects = domAllSelects.filter(function (s) {
-          return objOptions.targets.indexOf(s.type) > -1;
-        });
+        var domSelects = domAllSelects.filter((function (s) {
+          return objOptions.targetTypes.indexOf(s.type) > -1;
+        }));
 
         if (domSelects.length === 0) {
           if (boolInit === true && customSelect.utils.tryParseBool(objOptions.observe) === true) {
@@ -271,12 +265,12 @@
           return false;
         }
 
-        domSelects.forEach(function (domSelect) {
+        domSelects.forEach((function (domSelect) {
           customSelect.bindByElement(domSelect, true, domSelector);
-        });
+        }));
       },
       buildDomList: function buildDomList(domSelector, boolInit) {
-        if (objOptions.targets.indexOf(domSelector.type) === -1) {
+        if (objOptions.targetTypes.indexOf(domSelector.type) === -1) {
           customSelect.bindByParent(domSelector, boolInit);
         } else {
           customSelect.bindByElement(domSelector, boolInit);
@@ -324,7 +318,7 @@
       addToDom: function addToDom(domSelect, domCheckboxList, objDataOptions) {
         var domParent = domSelect.parentNode;
         var domCheckboxWrapper = customSelect.utils.createElement('div', 'customselect-list-container');
-        domSelect.classList.add(customSelect.settings.added);
+        domSelect.classList.add(customSelect.constants.added);
         domSelect.setAttribute('style', 'display:none !important');
         domCheckboxWrapper.appendChild(domSelect);
         domCheckboxWrapper.appendChild(domCheckboxList);
@@ -334,15 +328,31 @@
         if (customSelect.utils.tryParseBool(objDataOptions.dropdown) === true) {
           customSelect.dropdown.bindEvents(domCheckboxList);
         }
+
+        domSelect.onchange = function (event) {
+          var refId = event.target.dataset.customselectDataId;
+          var customSelectList = document.getElementById(refId);
+          var selectedValues = Array.from(event.target.options).filter((function (option) {
+            return option.selected === true;
+          }));
+          var customSelectAllInput = Array.from(customSelectList.querySelectorAll('input'));
+          customSelectAllInput.forEach((function (domInput) {
+            if (selectedValues.find((function (o) {
+              return o.value === domInput.value;
+            }))) {
+              domInput.checked = true;
+            } else {
+              domInput.checked = false;
+            }
+          }));
+          customSelect.triggerInitialState(customSelectList);
+        };
       },
       triggerInitialState: function triggerInitialState(domCheckboxWrapper) {
         var preCheckedElements = domCheckboxWrapper.querySelectorAll('input');
 
         if (preCheckedElements.length > 0) {
-          var changeEvent = new Event('change');
-          preCheckedElements.forEach(function (domInput) {
-            domInput.dispatchEvent(changeEvent);
-          });
+          customSelect.utils.trigger('change', preCheckedElements);
         }
       }
     };
@@ -354,7 +364,7 @@
     style: 'list',
     dropdown: false,
     classList: '',
-    targets: ['select-multiple', 'select-one'],
+    targetTypes: ['select-multiple', 'select-one'],
     parentNode: null,
     observe: true,
     selectedLimit: 3,
