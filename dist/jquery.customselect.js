@@ -109,6 +109,13 @@
               customSelect.dropdown.closeAll();
             }
           });
+          customSelect.utils.delegate('click', '.custom-select-added', function (event) {
+            var hasDropDownParent = event.target.closest('.customselect-dropdown') !== null;
+
+            if (hasDropDownParent === false) {
+              customSelect.dropdown.closeAll();
+            }
+          });
         },
         closeAll: function closeAll(currentDomDropdown) {
           var documentDropdowns = document.querySelectorAll('.customselect-dropdown');
@@ -217,7 +224,7 @@
         });
         domSelect.dataset.customselectDataId = customSelectID;
 
-        if (objDataOptions.selectors.indexOf(customSelectStyle.type) === -1) {
+        if (objDataOptions.targets.indexOf(customSelectStyle.type) === -1) {
           console.warn(customSelectStyle.type + ' is not a valid selector for customselect');
           return false;
         }
@@ -239,7 +246,7 @@
 
         domOptions.forEach(function (domOption) {
           var buildedOption = customSelect.buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions);
-          domCheckboxList.appendChild(buildedOption.domInputWrap);
+          domCheckboxList.appendChild(buildedOption.domInputGroup);
           customSelect.bindEventLink(buildedOption.domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
         });
         customSelect.addToDom(domSelect, domCheckboxList, objDataOptions);
@@ -252,7 +259,7 @@
       bindByParent: function bindByParent(domSelector, boolInit) {
         var domAllSelects = Array.from(domSelector.querySelectorAll('select'));
         var domSelects = domAllSelects.filter(function (s) {
-          return objOptions.selectors.indexOf(s.type) > -1;
+          return objOptions.targets.indexOf(s.type) > -1;
         });
 
         if (domSelects.length === 0) {
@@ -269,7 +276,7 @@
         });
       },
       buildDomList: function buildDomList(domSelector, boolInit) {
-        if (objOptions.selectors.indexOf(domSelector.type) === -1) {
+        if (objOptions.targets.indexOf(domSelector.type) === -1) {
           customSelect.bindByParent(domSelector, boolInit);
         } else {
           customSelect.bindByElement(domSelector, boolInit);
@@ -289,17 +296,17 @@
           domCheckboxOptionInput.name = strCustomSelectName;
         }
 
-        var domInputGroup = customSelect.positionLabel(objDataOptions.labelPosition, domCheckboxOptionInput);
+        var domCheckboxOptionLabel = customSelect.utils.createElement('label', 'customselect-list-label');
+        domCheckboxOptionLabel.innerText = domOption.text;
+        domCheckboxOptionLabel.htmlFor = strId;
+        var domInputGroup = customSelect.positionLabel(objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, customSelectStyle);
         return {
           domCheckboxOptionInput: domCheckboxOptionInput,
           domInputGroup: domInputGroup
         };
       },
-      positionLabel: function positionLabel(strLabelPosition, domCheckboxOptionInput) {
+      positionLabel: function positionLabel(strLabelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, customSelectStyle) {
         var domInputWrapElement = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item');
-        var domCheckboxOptionLabel = customSelect.utils.createElement('label', 'customselect-list-label');
-        domCheckboxOptionLabel.innerText = domOption.text;
-        domCheckboxOptionLabel.htmlFor = strId;
 
         if (strLabelPosition === 'before') {
           domInputWrapElement.appendChild(domCheckboxOptionLabel);
@@ -347,7 +354,7 @@
     style: 'list',
     dropdown: false,
     classList: '',
-    selectors: ['select-multiple', 'select-one'],
+    targets: ['select-multiple', 'select-one'],
     parentNode: null,
     observe: true,
     selectedLimit: 3,
