@@ -166,6 +166,7 @@
         }
       },
       bindEvents: function bindEvents(domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions) {
+        console.log(domOptions);
         domCheckboxOptionInput.addEventListener('change', function (event) {
           domOptions.find(function (o) {
             return o.value === event.target.value;
@@ -215,7 +216,7 @@
         var objDataOptions = Object.assign({}, objOptions);
         objDataOptions = Object.assign(objDataOptions, dataOptions);
         var customSelectStyle = customSelect.utils.getSelectStyle(domSelect.type, objDataOptions);
-        var domOptions = Array.from(domSelect.options);
+        var domOptions = Array.from(domSelect.children);
         var selectedOptions = domOptions.filter(function (o) {
           return o.selected;
         });
@@ -242,38 +243,24 @@
         }
 
         domOptions.forEach(function (domOption) {
-          var buildedOption = customSelect.buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions);
-
-          if (domOption.disabled) {
-            domOption.classList.add('disabled');
-          }
-
-          if (domOption.classList.length > 0) {
-            domOption.classList.forEach(function (className) {
-              buildedOption.domInputGroup.classList.add(className);
+          if (domOption.nodeName === 'OPTGROUP') {
+            var nestedList = customSelect.utils.createElement(customSelectStyle.list, 'customselect-optgroup');
+            var nestedListLabel = customSelect.utils.createElement(customSelectStyle.item, 'customselect-optgroup-label');
+            nestedListLabel.innerText = domOption.label;
+            nestedList.appendChild(nestedListLabel);
+            var optGroupOptions = Array.from(domOption.children);
+            optGroupOptions.forEach(function (domNestedOption) {
+              var buildedOption = customSelect.buildDomOption(domNestedOption, customSelectID, customSelectStyle, objDataOptions);
+              nestedList.appendChild(buildedOption.domInputGroup);
+              domCheckboxList.appendChild(nestedList);
+              customSelect.bindEvents(buildedOption.domCheckboxOptionInput, optGroupOptions, customSelectStyle, objDataOptions);
             });
+          } else if (domOption.nodeName === 'OPTION') {
+            var buildedOption = customSelect.buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions);
+            domCheckboxList.appendChild(buildedOption.domInputGroup);
+            customSelect.bindEvents(buildedOption.domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
           }
-
-          domCheckboxList.appendChild(buildedOption.domInputGroup);
-          customSelect.bindEvents(buildedOption.domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
         });
-        var optGroups = Array.from(domSelect.children).filter(function (o) {
-          return o.nodeName === 'OPTGROUP';
-        });
-
-        if (optGroups.length > 0) {
-          var nestedList = customSelect.utils.createElement(customSelectStyle.list, 'customselect-optgroup');
-          Array.from(optGroups).forEach(function (optgroup) {
-            var optionsInGroup = Array.from(optgroup.children);
-            optionsInGroup.forEach(function (option) {
-              var nestedOption = domCheckboxList.querySelector('input[value="' + option.value + '"]').closest('.customselect-list-input-item');
-              console.log(nestedOption);
-              nestedList.appendChild(nestedOption); //domCheckboxList.removeChild( nestedOption );
-            });
-          });
-          console.log(nestedList);
-        }
-
         customSelect.addToDom(domSelect, domCheckboxList, objDataOptions);
 
         if (boolInit === true && customSelect.utils.parseBool(objDataOptions.observe) === true) {
@@ -325,6 +312,17 @@
         domCheckboxOptionLabel.innerText = domOption.text;
         domCheckboxOptionLabel.htmlFor = strId;
         var domInputGroup = customSelect.positionLabel(objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, customSelectStyle);
+
+        if (domOption.disabled) {
+          domOption.classList.add('disabled');
+        }
+
+        if (domOption.classList.length > 0) {
+          domOption.classList.forEach(function (className) {
+            domInputGroup.classList.add(className);
+          });
+        }
+
         return {
           domCheckboxOptionInput: domCheckboxOptionInput,
           domInputGroup: domInputGroup

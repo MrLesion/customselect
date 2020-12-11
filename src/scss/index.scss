@@ -1,10 +1,16 @@
 @import 'variables';
 
-.customselect-added{
-    display: none!important;
+.customselect-added {
+    display: none !important;
 }
 
-.customselect-list {
+.customselect-optgroup {
+    .customselect-optgroup-label {
+        font-weight: bold;
+    }
+}
+
+.customselect-list, .customselect-optgroup {
     display: flex;
     flex-direction: column;
     list-style: none;
@@ -21,11 +27,14 @@
         justify-content: flex-start;
         align-items: center;
         cursor: pointer;
-        &.disabled{
-            pointer-events:none;
+        color: $text-color;
+
+        &.disabled {
+            pointer-events: none;
             opacity: .5;
         }
-        &.bold{
+
+        &.bold {
             font-weight: bold;
         }
     }
@@ -55,16 +64,23 @@
         font-size: .95rem;
         font-weight: 400;
         line-height: 1.5;
-        color: $dropdown-text-color;
+
         vertical-align: middle;
         background: url($dropdown-caret-gfx) no-repeat right .75rem center/8px 10px;
-        background-color: $dropdown-bg-color;
+        background-color: $bg-color;
         border-radius: $select-border-radius;
         appearance: none;
         transition: none;
 
+        .customselect-optgroup-label{
+            padding-left: 1em;
+            &:hover{
+                background-color: $bg-color;
+            }
+        }
+
         &.open {
-            .customselect-list-input-item:not(.customselect-dropdown-text) {
+            .customselect-list-input-item:not(.customselect-dropdown-text),.customselect-optgroup  {
                 opacity: 1;
                 height: auto;
 
@@ -84,19 +100,19 @@
             display: flex;
             justify-content: flex-start;
             align-items: center;
-            border: 1px solid $dropdown-border-color;
+            border: 1px solid $border-color;
         }
 
 
-        .customselect-list-input-item:not(.customselect-dropdown-text) {
+        .customselect-list-input-item:not(.customselect-dropdown-text),.customselect-optgroup {
             opacity: 0;
             height: 0;
             overflow: hidden;
             box-shadow: 0 5px 8px rgba(0, 0, 0, .1);
-            border-left: 1px solid $dropdown-border-color;
-            border-right: 1px solid $dropdown-border-color;
+            border-left: 1px solid $border-color;
+            border-right: 1px solid $border-color;
             position: relative;
-            background-color: $dropdown-bg-color;
+            background-color: $bg-color;
             z-index: 1;
 
             .customselect-list-label {
@@ -108,11 +124,14 @@
 
             &:last-child {
                 border-radius: 0 0 $select-border-radius $select-border-radius;
-                border-bottom: 1px solid $dropdown-border-color;
+                border-bottom: 1px solid $border-color;
             }
 
             &:hover {
-                background-color: darken($dropdown-bg-color, 5%);
+                background-color: darken($bg-color, 5%);
+                .customselect-optgroup-label{
+                    background-color: $bg-color;
+                }
             }
         }
     }
