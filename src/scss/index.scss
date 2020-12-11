@@ -21,6 +21,13 @@
         justify-content: flex-start;
         align-items: center;
         cursor: pointer;
+        &.disabled{
+            pointer-events:none;
+            opacity: .5;
+        }
+        &.bold{
+            font-weight: bold;
+        }
     }
 
     .customselect-list-input {
@@ -36,7 +43,7 @@
         display: inline-block;
     }
 
-    //Bootstrap custom Select
+    //Bootstrap custom select
     &.customselect-dropdown {
         box-sizing: border-box;
         margin: 0;

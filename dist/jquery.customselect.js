@@ -243,9 +243,37 @@
 
         domOptions.forEach(function (domOption) {
           var buildedOption = customSelect.buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions);
+
+          if (domOption.disabled) {
+            domOption.classList.add('disabled');
+          }
+
+          if (domOption.classList.length > 0) {
+            domOption.classList.forEach(function (className) {
+              buildedOption.domInputGroup.classList.add(className);
+            });
+          }
+
           domCheckboxList.appendChild(buildedOption.domInputGroup);
           customSelect.bindEvents(buildedOption.domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
         });
+        var optGroups = Array.from(domSelect.children).filter(function (o) {
+          return o.nodeName === 'OPTGROUP';
+        });
+
+        if (optGroups.length > 0) {
+          var nestedList = customSelect.utils.createElement(customSelectStyle.list, 'customselect-optgroup');
+          Array.from(optGroups).forEach(function (optgroup) {
+            var optionsInGroup = Array.from(optgroup.children);
+            optionsInGroup.forEach(function (option) {
+              var nestedOption = domCheckboxList.querySelector('input[value="' + option.value + '"]').closest('.customselect-list-input-item');
+              console.log(nestedOption);
+              nestedList.appendChild(nestedOption); //domCheckboxList.removeChild( nestedOption );
+            });
+          });
+          console.log(nestedList);
+        }
+
         customSelect.addToDom(domSelect, domCheckboxList, objDataOptions);
 
         if (boolInit === true && customSelect.utils.parseBool(objDataOptions.observe) === true) {
