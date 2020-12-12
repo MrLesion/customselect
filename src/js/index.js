@@ -1,8 +1,7 @@
+/*! https://github.com/MrLesion/customselect v1.0.0 by @MrLesion */
 ( function ( $ ) {
     $.fn.customselect = function ( options ) {
-
         const objOptions = $.extend( {}, $.fn.customselect.defaults, options );
-
         const customSelect = {
             events: {},
             constants: {
@@ -41,11 +40,11 @@
                     domElement.className = strClassName;
                     return domElement;
                 },
-                getSelectStyle: ( customSelectType, objDataOptions ) => {
+                getSelectStyle: ( strSelectType, objDataOptions ) => {
                     let returnObj = {
                         list: 'div',
                         item: 'div',
-                        type: customSelectType
+                        type: strSelectType
                     };
                     if ( objDataOptions.style === 'list' ) {
                         returnObj.list = 'ul';
@@ -119,17 +118,17 @@
                     domCheckBoxListDropDown.addEventListener( 'dropdown.close', ( event ) => {
                         const searchItem = event.target.querySelector( '.customselect-search-item' );
                         if ( searchItem !== null ) {
-                            let searchInput = searchItem.querySelector( '.customselect-search-input' );
-                            searchInput.value = '';
-                            customSelect.utils.triggerEvent( searchInput, 'input' );
+                            let domSearchInput = searchItem.querySelector( '.customselect-search-input' );
+                            domSearchInput.value = '';
+                            customSelect.utils.triggerEvent( domSearchInput, 'input' );
                         }
                     } );
 
 
                 },
-                closeAll: ( currentDomDropdown ) => {
-                    const documentDropdowns = document.querySelectorAll( '.customselect-dropdown' );
-                    Array.from( documentDropdowns ).filter( d => d !== currentDomDropdown ).forEach( ( domDropdown ) => {
+                closeAll: ( domCurrentDropdown ) => {
+                    const domAllDropdowns = document.querySelectorAll( '.customselect-dropdown' );
+                    Array.from( domAllDropdowns ).filter( d => d !== domCurrentDropdown ).forEach( ( domDropdown ) => {
                         customSelect.utils.triggerCustomEvent( domDropdown, 'dropdown.close' );
                         domDropdown.classList.remove( 'open' );
                     } );
@@ -179,7 +178,48 @@
                     }
                 }
             },
-            bindEvents: ( domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions ) => {
+            search: {
+                build: ( objSelectStyle, objDataOptions ) => {
+                    let domSearchOption = customSelect.utils.createElement( objSelectStyle.item, 'customselect-list-input-item customselect-search-item' );
+                    let domSearchInput = customSelect.utils.createElement( 'input', 'customselect-search-input' );
+                    domSearchInput.type = 'search';
+                    domSearchInput.placeholder = objDataOptions.searchText;
+                    domSearchOption.appendChild( domSearchInput );
+                    return domSearchOption;
+                },
+                bindEvents: ( domCheckboxList ) => {
+                    const domSearchInput = domCheckboxList.querySelector( '.customselect-search-input' );
+                    domSearchInput.addEventListener( 'input', ( event ) => {
+                        const strQuery = event.target.value.toLowerCase();
+                        customSelect.search.query( strQuery, domCheckboxList );
+                    } );
+                },
+                query: ( strQuery, domCheckboxList ) => {
+                    let items = Array.from( domCheckboxList.querySelectorAll( '.customselect-list-input-item' ) );
+                    if ( strQuery.length > 0 ) {
+                        domCheckboxList.classList.add( 'searching' );
+                        items.forEach( item => {
+                            const input = item.querySelector( '.customselect-list-input' );
+                            const label = item.querySelector( '.customselect-list-label' );
+                            if ( input !== null && label !== null ) {
+                                if ( input.value.toLowerCase().indexOf( strQuery ) > -1 || label.innerText.toLowerCase().indexOf( strQuery ) > -1 ) {
+                                    item.classList.add( 'match' );
+                                } else {
+                                    item.classList.remove( 'match' );
+                                }
+                            }
+
+
+                        } );
+                    } else {
+                        domCheckboxList.classList.remove( 'searching' );
+                        items.forEach( item => {
+                            item.classList.remove( 'match' );
+                        } )
+                    }
+                }
+            },
+            bindEvents: ( domCheckboxOptionInput, domOptions, objSelectStyle, objDataOptions ) => {
                 domCheckboxOptionInput.addEventListener( 'change', ( event ) => {
                     domOptions.find( o => o.value === event.target.value ).selected = event.target.checked;
                     if ( customSelect.utils.parseBool( objDataOptions.dropdown ) === true ) {
@@ -198,13 +238,14 @@
                             }
                             selectedTextNode.innerText = selectedOptionsText;
                         }
-                        if ( customSelectStyle.type === 'select-one' ) {
+                        if ( objSelectStyle.type === 'select-one' ) {
                             domDropdown.classList.remove( 'open' );
                         }
                     }
                 } );
             },
             bindByElement: ( domSelect, boolInit = false, domSelector = null ) => {
+
                 if ( domSelect.className.indexOf( customSelect.constants.added ) > -1 ) {
                     return false;
                 }
@@ -214,62 +255,55 @@
                 let objDataOptions = Object.assign( {}, objOptions );
                 objDataOptions = Object.assign( objDataOptions, dataOptions );
 
-                const customSelectStyle = customSelect.utils.getSelectStyle( domSelect.type, objDataOptions );
+                const objSelectStyle = customSelect.utils.getSelectStyle( domSelect.type, objDataOptions );
                 const domOptions = Array.from( domSelect.children );
                 const selectedOptions = domOptions.filter( o => o.selected );
 
-
-
                 domSelect.dataset.customselectDataId = customSelectID;
 
-                if ( objDataOptions.targetTypes.indexOf( customSelectStyle.type ) === -1 ) {
-                    console.warn( customSelectStyle.type + ' is not a valid selector for customselect' );
+                if ( objDataOptions.targetTypes.indexOf( objSelectStyle.type ) === -1 ) {
+                    console.warn( objSelectStyle.type + ' is not a valid selector for customselect' );
                     return false;
                 }
 
-                if ( selectedOptions.length === 0 && customSelectStyle.type === 'select-one' ) {
+                if ( selectedOptions.length === 0 && objSelectStyle.type === 'select-one' ) {
                     domOptions[ 0 ].selected = true;
                 }
 
-                let domCheckboxList = customSelect.utils.createElement( customSelectStyle.list, 'customselect-list ' + objDataOptions.classList );
+                let domCheckboxList = customSelect.utils.createElement( objSelectStyle.list, 'customselect-list ' + objDataOptions.classList );
 
                 domCheckboxList.id = customSelectID;
                 domCheckboxList.dataset.placeholder = objDataOptions.emptyText;
-                domCheckboxList.dataset.type = customSelectStyle.type;
+                domCheckboxList.dataset.type = objSelectStyle.type;
                 if ( customSelect.utils.parseBool( objDataOptions.dropdown ) === true ) {
                     domCheckboxList.classList.add( 'customselect-dropdown' );
-                    let domSelectedOption = customSelect.utils.createElement( customSelectStyle.item, 'customselect-list-input-item customselect-dropdown-text' );
+                    let domSelectedOption = customSelect.utils.createElement( objSelectStyle.item, 'customselect-list-input-item customselect-dropdown-text' );
                     domCheckboxList.appendChild( domSelectedOption );
                 }
 
                 if ( customSelect.utils.parseBool( objDataOptions.search ) === true ) {
                     domCheckboxList.classList.add( 'customselect-search' );
-                    let domSelectedOption = customSelect.utils.createElement( customSelectStyle.item, 'customselect-list-input-item customselect-search-item' );
-                    let domSearchInput = customSelect.utils.createElement( 'input', 'customselect-search-input' );
-                    domSearchInput.type = 'search';
-                    domSearchInput.placeholder = 'Search';
-                    domSelectedOption.appendChild( domSearchInput );
-                    domCheckboxList.appendChild( domSelectedOption );
+                    const domSearchListInput = customSelect.search.build( objSelectStyle, objDataOptions );
+                    domCheckboxList.appendChild( domSearchListInput );
                 }
 
                 domOptions.forEach( ( domOption ) => {
-
                     if ( domOption.nodeName === 'OPTGROUP' ) {
-                        let nestedList = customSelect.utils.createElement( customSelectStyle.list, 'customselect-optgroup' );
-                        let nestedListLabel = customSelect.utils.createElement( customSelectStyle.item, 'customselect-optgroup-label' );
+                        let nestedList = customSelect.utils.createElement( objSelectStyle.list, 'customselect-optgroup' );
+                        let nestedListLabel = customSelect.utils.createElement( objSelectStyle.item, 'customselect-optgroup-label' );
                         nestedListLabel.innerText = domOption.label;
                         nestedList.appendChild( nestedListLabel );
                         const optGroupOptions = Array.from( domOption.children );
                         optGroupOptions.forEach( ( domNestedOption ) => {
-                            const buildedOption = customSelect.buildDomOption( domNestedOption, customSelectID, customSelectStyle, objDataOptions );
+                            const buildedOption = customSelect.buildDomOption( domNestedOption, customSelectID, objSelectStyle, objDataOptions );
                             nestedList.appendChild( buildedOption.domInputGroup );
                             domCheckboxList.appendChild( nestedList );
-                            customSelect.bindEvents( buildedOption.domCheckboxOptionInput, optGroupOptions, customSelectStyle, objDataOptions );
+                            customSelect.bindEvents( buildedOption.domCheckboxOptionInput, optGroupOptions, objSelectStyle, objDataOptions );
                         } );
                     } else if ( domOption.nodeName === 'OPTION' ) {
-                        const buildedOption = customSelect.buildDomOption( domOption, customSelectID, customSelectStyle, objDataOptions );
+                        const buildedOption = customSelect.buildDomOption( domOption, customSelectID, objSelectStyle, objDataOptions );
                         domCheckboxList.appendChild( buildedOption.domInputGroup );
-                        customSelect.bindEvents( buildedOption.domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions );
+                        customSelect.bindEvents( buildedOption.domCheckboxOptionInput, domOptions, objSelectStyle, objDataOptions );
                     }
 
                 } );
@@ -305,16 +339,16 @@
                     customSelect.bindByElement( domSelector, boolInit );
                 }
             },
-            buildDomOption: ( domOption, customSelectID, customSelectStyle, objDataOptions ) => {
+            buildDomOption: ( domOption, customSelectID, objSelectStyle, objDataOptions ) => {
                 let domCheckboxOptionInput = customSelect.utils.createElement( 'input', 'customselect-list-input' );
                 let strCustomSelectName = '';
                 const strId = customSelect.utils.getCustomSelectID( 20 );
-                domCheckboxOptionInput.type = customSelectStyle.type === 'select-one' ? 'radio' : 'checkbox';
+                domCheckboxOptionInput.type = objSelectStyle.type === 'select-one' ? 'radio' : 'checkbox';
                 domCheckboxOptionInput.value = domOption.value;
                 domCheckboxOptionInput.id = strId;
                 domCheckboxOptionInput.checked = domOption.selected;
 
-                if ( customSelectStyle.type === 'select-one' ) {
+                if ( objSelectStyle.type === 'select-one' ) {
                     strCustomSelectName = customSelectID;
                     domCheckboxOptionInput.name = strCustomSelectName;
                 }
@@ -323,7 +357,7 @@
                 domCheckboxOptionLabel.innerText = domOption.text;
                 domCheckboxOptionLabel.htmlFor = strId;
 
-                let domInputGroup = customSelect.positionLabel( objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, customSelectStyle );
+                let domInputGroup = customSelect.positionLabel( objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, objSelectStyle );
 
                 if ( domOption.disabled ) {
                     domOption.classList.add( 'disabled' );
@@ -334,15 +368,14 @@
                     } );
                 }
 
-
                 return {
                     domCheckboxOptionInput: domCheckboxOptionInput,
                     domInputGroup: domInputGroup
                 };
 
             },
-            positionLabel: ( strLabelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, customSelectStyle ) => {
-                const domInputWrapElement = customSelect.utils.createElement( customSelectStyle.item, 'customselect-list-input-item' );
+            positionLabel: ( strLabelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, objSelectStyle ) => {
+                const domInputWrapElement = customSelect.utils.createElement( objSelectStyle.item, 'customselect-list-input-item' );
 
                 if ( strLabelPosition === 'before' ) {
                     domInputWrapElement.appendChild( domCheckboxOptionLabel );
@@ -371,32 +404,7 @@
                 }
 
                 if ( customSelect.utils.parseBool( objDataOptions.search ) === true ) {
-                    const searchInput = domCheckboxList.querySelector( '.customselect-search-input' );
-                    searchInput.addEventListener( 'input', ( event ) => {
-                        const query = event.target.value.toLowerCase();
-                        let items = Array.from( domCheckboxList.querySelectorAll( '.customselect-list-input-item' ) );
-                        if ( query.length > 0 ) {
-                            domCheckboxList.classList.add( 'searching' );
-                            let results = items.forEach( item => {
-                                const input = item.querySelector( '.customselect-list-input' );
-                                const label = item.querySelector( '.customselect-list-label' );
-                                if ( input !== null && label !== null ) {
-                                    if ( input.value.toLowerCase().indexOf( query ) > -1 || label.innerText.toLowerCase().indexOf( query ) > -1 ) {
-                                        item.classList.add( 'match' );
-                                    } else {
-                                        item.classList.remove( 'match' );
-                                    }
-                                }
-
-
-                            } );
-                        } else {
-                            domCheckboxList.classList.remove( 'searching' );
-                            items.forEach( item => {
-                                item.classList.remove( 'match' );
-                            } )
-                        }
-                    } );
+                    customSelect.search.bindEvents( domCheckboxList );
                 }
 
                 domSelect.onchange = ( event ) => {
@@ -423,12 +431,14 @@
             }
         };
         customSelect.init( this );
+        return this;
     };
 
     $.fn.customselect.defaults = {
         labelPosition: 'after',
         style: 'list',
         dropdown: false,
+        search: false,
         classList: '',
         targetTypes: [ 'select-multiple', 'select-one' ],
         parentNode: null,
@@ -437,6 +447,7 @@
         selectedDelimiter: ' | ',
         emptyText: 'Nothing selected',
         selectedText: 'selected',
-        allSelectedText: 'All selected'
+        allSelectedText: 'All selected',
+        searchText: 'Search options'
     };
 }( jQuery ) );

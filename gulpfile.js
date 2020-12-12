@@ -5,6 +5,7 @@ const polyfiller = require('gulp-polyfiller');
 const concat = require('gulp-concat');
 const rename = require('gulp-rename');
 const sass = require('gulp-sass');
+const eslint = require('gulp-eslint');
 
 const paths = {
     js: 'src/js/**/*.js',
@@ -27,6 +28,9 @@ function style() {
 function js() {
     return gulp.src(paths.js)
         .pipe(babel())
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failAfterError())
         .pipe(polyfiller(['Array.prototype.find', 'Array.from']))
         .pipe(concat('jquery.customselect.js'))
         .pipe(gulp.dest(paths.dist))

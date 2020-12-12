@@ -1,5 +1,6 @@
 "use strict";
 
+/*! https://github.com/MrLesion/customselect v1.0.0 by @MrLesion */
 (function ($) {
   $.fn.customselect = function (options) {
     var objOptions = $.extend({}, $.fn.customselect.defaults, options);
@@ -49,11 +50,11 @@
           domElement.className = strClassName;
           return domElement;
         },
-        getSelectStyle: function getSelectStyle(customSelectType, objDataOptions) {
+        getSelectStyle: function getSelectStyle(strSelectType, objDataOptions) {
           var returnObj = {
             list: 'div',
             item: 'div',
-            type: customSelectType
+            type: strSelectType
           };
 
           if (objDataOptions.style === 'list') {
@@ -131,16 +132,16 @@
             var searchItem = event.target.querySelector('.customselect-search-item');
 
             if (searchItem !== null) {
-              var searchInput = searchItem.querySelector('.customselect-search-input');
-              searchInput.value = '';
-              customSelect.utils.triggerEvent(searchInput, 'input');
+              var domSearchInput = searchItem.querySelector('.customselect-search-input');
+              domSearchInput.value = '';
+              customSelect.utils.triggerEvent(domSearchInput, 'input');
             }
           });
         },
-        closeAll: function closeAll(currentDomDropdown) {
-          var documentDropdowns = document.querySelectorAll('.customselect-dropdown');
-          Array.from(documentDropdowns).filter(function (d) {
-            return d !== currentDomDropdown;
+        closeAll: function closeAll(domCurrentDropdown) {
+          var domAllDropdowns = document.querySelectorAll('.customselect-dropdown');
+          Array.from(domAllDropdowns).filter(function (d) {
+            return d !== domCurrentDropdown;
           }).forEach(function (domDropdown) {
             customSelect.utils.triggerCustomEvent(domDropdown, 'dropdown.close');
             domDropdown.classList.remove('open');
@@ -194,7 +195,48 @@
           }
         }
       },
-      bindEvents: function bindEvents(domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions) {
+      search: {
+        build: function build(objSelectStyle, objDataOptions) {
+          var domSearchOption = customSelect.utils.createElement(objSelectStyle.item, 'customselect-list-input-item customselect-search-item');
+          var domSearchInput = customSelect.utils.createElement('input', 'customselect-search-input');
+          domSearchInput.type = 'search';
+          domSearchInput.placeholder = objDataOptions.searchText;
+          domSearchOption.appendChild(domSearchInput);
+          return domSearchOption;
+        },
+        bindEvents: function bindEvents(domCheckboxList) {
+          var domSearchInput = domCheckboxList.querySelector('.customselect-search-input');
+          domSearchInput.addEventListener('input', function (event) {
+            var strQuery = event.target.value.toLowerCase();
+            customSelect.search.query(strQuery, domCheckboxList);
+          });
+        },
+        query: function query(strQuery, domCheckboxList) {
+          var items = Array.from(domCheckboxList.querySelectorAll('.customselect-list-input-item'));
+
+          if (strQuery.length > 0) {
+            domCheckboxList.classList.add('searching');
+            items.forEach(function (item) {
+              var input = item.querySelector('.customselect-list-input');
+              var label = item.querySelector('.customselect-list-label');
+
+              if (input !== null && label !== null) {
+                if (input.value.toLowerCase().indexOf(strQuery) > -1 || label.innerText.toLowerCase().indexOf(strQuery) > -1) {
+                  item.classList.add('match');
+                } else {
+                  item.classList.remove('match');
+                }
+              }
+            });
+          } else {
+            domCheckboxList.classList.remove('searching');
+            items.forEach(function (item) {
+              item.classList.remove('match');
+            });
+          }
+        }
+      },
+      bindEvents: function bindEvents(domCheckboxOptionInput, domOptions, objSelectStyle, objDataOptions) {
         domCheckboxOptionInput.addEventListener('change', function (event) {
           domOptions.find(function (o) {
             return o.value === event.target.value;
@@ -225,7 +267,7 @@
               selectedTextNode.innerText = selectedOptionsText;
             }
 
-            if (customSelectStyle.type === 'select-one') {
+            if (objSelectStyle.type === 'select-one') {
               domDropdown.classList.remove('open');
             }
           }
@@ -243,64 +285,56 @@
         var dataOptions = domSelect.dataset;
         var objDataOptions = Object.assign({}, objOptions);
         objDataOptions = Object.assign(objDataOptions, dataOptions);
-        var customSelectStyle = customSelect.utils.getSelectStyle(domSelect.type, objDataOptions);
+        var objSelectStyle = customSelect.utils.getSelectStyle(domSelect.type, objDataOptions);
         var domOptions = Array.from(domSelect.children);
         var selectedOptions = domOptions.filter(function (o) {
           return o.selected;
         });
         domSelect.dataset.customselectDataId = customSelectID;
 
-        if (objDataOptions.targetTypes.indexOf(customSelectStyle.type) === -1) {
-          console.warn(customSelectStyle.type + ' is not a valid selector for customselect');
+        if (objDataOptions.targetTypes.indexOf(objSelectStyle.type) === -1) {
+          console.warn(objSelectStyle.type + ' is not a valid selector for customselect');
           return false;
         }
 
-        if (selectedOptions.length === 0 && customSelectStyle.type === 'select-one') {
+        if (selectedOptions.length === 0 && objSelectStyle.type === 'select-one') {
           domOptions[0].selected = true;
         }
 
-        var domCheckboxList = customSelect.utils.createElement(customSelectStyle.list, 'customselect-list ' + objDataOptions.classList);
+        var domCheckboxList = customSelect.utils.createElement(objSelectStyle.list, 'customselect-list ' + objDataOptions.classList);
         domCheckboxList.id = customSelectID;
         domCheckboxList.dataset.placeholder = objDataOptions.emptyText;
-        domCheckboxList.dataset.type = customSelectStyle.type;
+        domCheckboxList.dataset.type = objSelectStyle.type;
 
         if (customSelect.utils.parseBool(objDataOptions.dropdown) === true) {
           domCheckboxList.classList.add('customselect-dropdown');
-          var domSelectedOption = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item customselect-dropdown-text');
+          var domSelectedOption = customSelect.utils.createElement(objSelectStyle.item, 'customselect-list-input-item customselect-dropdown-text');
           domCheckboxList.appendChild(domSelectedOption);
         }
 
         if (customSelect.utils.parseBool(objDataOptions.search) === true) {
           domCheckboxList.classList.add('customselect-search');
-
-          var _domSelectedOption = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item customselect-search-item');
-
-          var domSearchInput = customSelect.utils.createElement('input', 'customselect-search-input');
-          domSearchInput.type = 'search';
-          domSearchInput.placeholder = 'Search';
-
-          _domSelectedOption.appendChild(domSearchInput);
-
-          domCheckboxList.appendChild(_domSelectedOption);
+          var domSearchListInput = customSelect.search.build(objSelectStyle, objDataOptions);
+          domCheckboxList.appendChild(domSearchListInput);
         }
 
         domOptions.forEach(function (domOption) {
           if (domOption.nodeName === 'OPTGROUP') {
-            var nestedList = customSelect.utils.createElement(customSelectStyle.list, 'customselect-optgroup');
-            var nestedListLabel = customSelect.utils.createElement(customSelectStyle.item, 'customselect-optgroup-label');
+            var nestedList = customSelect.utils.createElement(objSelectStyle.list, 'customselect-optgroup');
+            var nestedListLabel = customSelect.utils.createElement(objSelectStyle.item, 'customselect-optgroup-label');
             nestedListLabel.innerText = domOption.label;
             nestedList.appendChild(nestedListLabel);
             var optGroupOptions = Array.from(domOption.children);
             optGroupOptions.forEach(function (domNestedOption) {
-              var buildedOption = customSelect.buildDomOption(domNestedOption, customSelectID, customSelectStyle, objDataOptions);
+              var buildedOption = customSelect.buildDomOption(domNestedOption, customSelectID, objSelectStyle, objDataOptions);
               nestedList.appendChild(buildedOption.domInputGroup);
               domCheckboxList.appendChild(nestedList);
-              customSelect.bindEvents(buildedOption.domCheckboxOptionInput, optGroupOptions, customSelectStyle, objDataOptions);
+              customSelect.bindEvents(buildedOption.domCheckboxOptionInput, optGroupOptions, objSelectStyle, objDataOptions);
             });
           } else if (domOption.nodeName === 'OPTION') {
-            var buildedOption = customSelect.buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions);
+            var buildedOption = customSelect.buildDomOption(domOption, customSelectID, objSelectStyle, objDataOptions);
             domCheckboxList.appendChild(buildedOption.domInputGroup);
-            customSelect.bindEvents(buildedOption.domCheckboxOptionInput, domOptions, customSelectStyle, objDataOptions);
+            customSelect.bindEvents(buildedOption.domCheckboxOptionInput, domOptions, objSelectStyle, objDataOptions);
           }
         });
         customSelect.addToDom(domSelect, domCheckboxList, objDataOptions);
@@ -336,16 +370,16 @@
           customSelect.bindByElement(domSelector, boolInit);
         }
       },
-      buildDomOption: function buildDomOption(domOption, customSelectID, customSelectStyle, objDataOptions) {
+      buildDomOption: function buildDomOption(domOption, customSelectID, objSelectStyle, objDataOptions) {
         var domCheckboxOptionInput = customSelect.utils.createElement('input', 'customselect-list-input');
         var strCustomSelectName = '';
         var strId = customSelect.utils.getCustomSelectID(20);
-        domCheckboxOptionInput.type = customSelectStyle.type === 'select-one' ? 'radio' : 'checkbox';
+        domCheckboxOptionInput.type = objSelectStyle.type === 'select-one' ? 'radio' : 'checkbox';
         domCheckboxOptionInput.value = domOption.value;
         domCheckboxOptionInput.id = strId;
         domCheckboxOptionInput.checked = domOption.selected;
 
-        if (customSelectStyle.type === 'select-one') {
+        if (objSelectStyle.type === 'select-one') {
           strCustomSelectName = customSelectID;
           domCheckboxOptionInput.name = strCustomSelectName;
         }
@@ -353,7 +387,7 @@
         var domCheckboxOptionLabel = customSelect.utils.createElement('label', 'customselect-list-label');
         domCheckboxOptionLabel.innerText = domOption.text;
         domCheckboxOptionLabel.htmlFor = strId;
-        var domInputGroup = customSelect.positionLabel(objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, customSelectStyle);
+        var domInputGroup = customSelect.positionLabel(objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, objSelectStyle);
 
         if (domOption.disabled) {
           domOption.classList.add('disabled');
@@ -370,8 +404,8 @@
           domInputGroup: domInputGroup
         };
       },
-      positionLabel: function positionLabel(strLabelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, customSelectStyle) {
-        var domInputWrapElement = customSelect.utils.createElement(customSelectStyle.item, 'customselect-list-input-item');
+      positionLabel: function positionLabel(strLabelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, objSelectStyle) {
+        var domInputWrapElement = customSelect.utils.createElement(objSelectStyle.item, 'customselect-list-input-item');
 
         if (strLabelPosition === 'before') {
           domInputWrapElement.appendChild(domCheckboxOptionLabel);
@@ -401,32 +435,7 @@
         }
 
         if (customSelect.utils.parseBool(objDataOptions.search) === true) {
-          var searchInput = domCheckboxList.querySelector('.customselect-search-input');
-          searchInput.addEventListener('input', function (event) {
-            var query = event.target.value.toLowerCase();
-            var items = Array.from(domCheckboxList.querySelectorAll('.customselect-list-input-item'));
-
-            if (query.length > 0) {
-              domCheckboxList.classList.add('searching');
-              var results = items.forEach(function (item) {
-                var input = item.querySelector('.customselect-list-input');
-                var label = item.querySelector('.customselect-list-label');
-
-                if (input !== null && label !== null) {
-                  if (input.value.toLowerCase().indexOf(query) > -1 || label.innerText.toLowerCase().indexOf(query) > -1) {
-                    item.classList.add('match');
-                  } else {
-                    item.classList.remove('match');
-                  }
-                }
-              });
-            } else {
-              domCheckboxList.classList.remove('searching');
-              items.forEach(function (item) {
-                item.classList.remove('match');
-              });
-            }
-          });
+          customSelect.search.bindEvents(domCheckboxList);
         }
 
         domSelect.onchange = function (event) {
@@ -457,12 +466,14 @@
       }
     };
     customSelect.init(this);
+    return this;
   };
 
   $.fn.customselect.defaults = {
     labelPosition: 'after',
     style: 'list',
     dropdown: false,
+    search: false,
     classList: '',
     targetTypes: ['select-multiple', 'select-one'],
     parentNode: null,
@@ -471,7 +482,8 @@
     selectedDelimiter: ' | ',
     emptyText: 'Nothing selected',
     selectedText: 'selected',
-    allSelectedText: 'All selected'
+    allSelectedText: 'All selected',
+    searchText: 'Search options'
   };
 })(jQuery);
 ;(function () {

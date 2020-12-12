@@ -5,7 +5,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>jQuery Custom Select</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link rel="stylesheet" href="dist/jquery.customselect.css">
     </head>
 
@@ -89,18 +89,44 @@
                             </select>
                         </div>
                         <hr />
-                        <div class="hbs-container"></div>
+                        <div class="col-6 hbs-container"></div>
+                    </div>
+                </div>
+                <div class="new-row row">
+                    <div class="col-6 mb-4">
+                        <h4>Try convert</h4>
+                        <select data-dropdown="true" class="js-convert-single">
+                            <option value="" selected>default</option>
+                            <option value="2">Select 2</option>
+                            <option value="3">Select 3</option>
+                            <optgroup label="Header">
+                                <option value="4">Select 4</option>
+                                <option value="5">Select 5</option>
+                                <option value="6">Select 6</option>
+                            </optgroup>
+                        </select>
+                        <a href="#" class=" mt-2 btn btn-primary" onclick="javascript:jQuery( '.js-convert-single' ).customselect();">Convert</a>
+                    </div>
+                    <div class="col-6 mb-4">
+                        <select multiple class="js-convert-multiple">
+                            <option value="" selected>default</option>
+                            <option value="2">Select 2</option>
+                            <option value="3">Select 3</option>
+                        </select>
+                        <a href="#" class=" mt-2 btn btn-primary" onclick="javascript:jQuery( '.js-convert-multiple' ).customselect();">Convert</a>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- jQuery is required -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <!-- Handlebars is NOT required -->
         <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
-        <script src="dist/jquery.customselect.js"></script>
+        <script src="dist/jquery.customselect.min.js"></script>
         <script src="src/test.js"></script>
         <script>
         //Defaults
-        jQuery( 'body' ).customselect( {
+        jQuery( '.customselect-parent-node' ).customselect( {
             labelPosition: 'after', // after | before | wrap
             style: 'list', // list | none
             dropdown: false, // true | false
@@ -113,9 +139,9 @@
             selectedDelimiter: ' | ', // string
             emptyText: 'Nothing selected', // string
             selectedText: 'selected', // string
-            allSelectedText: 'All selected' // string
+            allSelectedText: 'All selected', // string
+            searchText: 'Search options' // string
         } );
         </script>
     </body>
-
 </html>
