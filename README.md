@@ -52,7 +52,7 @@ All options are available at initialization and by data-attributes on the select
 | emptyText         		| `Nothing selected`  					| String                     				| Empty text for dropdown placeholder                                           |
 | selectedText      		| `selected`          					| String                     				| Selected postfix for multi-dropdown placeholder                               |
 | allSelectedText   		| `All selected`      					| String                     				| All selected text for multi-dropdown placeholder 							    |
-| selectedDelimiter   		| `\ | `      								| String                     				| The delimiter for selected options in multi select					        |
+| selectedDelimiter   		| `\|`      								| String                     				| The delimiter for selected options in multi select					        |
 | selectedLimit   			| `3`      								| Number                     				| Max selected options in multi select, before truncate					        |
 | searchText   				| `Search options`      				| String                     				| Search input placeholder test					        						|
 
