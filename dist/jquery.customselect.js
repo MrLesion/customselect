@@ -237,6 +237,7 @@
         }
       },
       bindEvents: function bindEvents(domCheckboxOptionInput, domOptions, objSelectStyle, objDataOptions) {
+        var domSelect = domOptions[0].closest('select');
         domCheckboxOptionInput.addEventListener('change', function (event) {
           domOptions.find(function (o) {
             return o.value === event.target.value;
@@ -272,6 +273,25 @@
             }
           }
         });
+
+        domSelect.onchange = function (event) {
+          var refId = event.target.dataset.customselectDataId;
+          var customSelectList = document.getElementById(refId);
+          var selectedValues = Array.from(event.target.options).filter(function (option) {
+            return option.selected === true;
+          });
+          var customSelectAllInput = Array.from(customSelectList.querySelectorAll('input'));
+          customSelectAllInput.forEach(function (domInput) {
+            if (selectedValues.find(function (o) {
+              return o.value === domInput.value;
+            })) {
+              domInput.checked = true;
+            } else {
+              domInput.checked = false;
+            }
+          });
+          customSelect.triggerInitialState(customSelectList);
+        };
       },
       bindByElement: function bindByElement(domSelect) {
         var boolInit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -437,25 +457,6 @@
         if (customSelect.utils.parseBool(objDataOptions.search) === true) {
           customSelect.search.bindEvents(domCheckboxList);
         }
-
-        domSelect.onchange = function (event) {
-          var refId = event.target.dataset.customselectDataId;
-          var customSelectList = document.getElementById(refId);
-          var selectedValues = Array.from(event.target.options).filter(function (option) {
-            return option.selected === true;
-          });
-          var customSelectAllInput = Array.from(customSelectList.querySelectorAll('input'));
-          customSelectAllInput.forEach(function (domInput) {
-            if (selectedValues.find(function (o) {
-              return o.value === domInput.value;
-            })) {
-              domInput.checked = true;
-            } else {
-              domInput.checked = false;
-            }
-          });
-          customSelect.triggerInitialState(customSelectList);
-        };
       },
       triggerInitialState: function triggerInitialState(domCheckboxWrapper) {
         var preCheckedElements = domCheckboxWrapper.querySelectorAll('input');

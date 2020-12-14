@@ -6,9 +6,11 @@ Small plugin to convert selects/multi-selects to lists of radio-inputs / checkbo
 * Converts any normal select into a list of radio-inputs
 * Converts any multi select into a list of checkbox-inputs
 * Add dropdown functionality
+* Add inline search for long lists
 * Observe dynamically added markup, to bind them on the fly
 
 ## Usage
+Requires jQuery
 Bind on any parent element of one or more select-element(s)
 ```javascript
 // Bind on parent width default settings
@@ -16,10 +18,20 @@ jQuery('select').customselect();
 
 // or with custom settings
 jQuery('.top-container-containing-the-selects').customselect({
-    labelPosition: 'before',
-    observe: false,
-    emptyText: 'Please select option',
-    search: true
+    labelPosition: 'after', // after | before | wrap
+    style: 'list', // list | none
+    dropdown: false, // true | false
+    search: false, // true | false
+    classList: '', // string
+    targetTypes: [ 'select-multiple', 'select-one' ], // select-multiple | select-one
+    parentNode: null, // null | selector
+    observe: true, // true | false
+    selectedLimit: 3, // number
+    selectedDelimiter: ' | ', // string
+    emptyText: 'Nothing selected', // string
+    selectedText: 'selected', // string
+    allSelectedText: 'All selected', // string
+    searchText: 'Search options' // string
 });
 ```
 
