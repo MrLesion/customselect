@@ -53,7 +53,7 @@
                         <hr />
                         <div class="col-6 mb-4">
                             <h4>Dropdown single</h4>
-                            <select data-dropdown="true">
+                            <select data-dropdown="true" >
                                 <option value="1">Multi-select 1</option>
                                 <option disabled value="2">Multi-select 2</option>
                                 <option class="bold" value="3">Multi-select 3</option>
@@ -140,7 +140,8 @@
             emptyText: 'Nothing selected', // string
             selectedText: 'selected', // string
             allSelectedText: 'All selected', // string
-            searchText: 'Search options' // string
+            searchText: 'Search options', // string
+            onChange: null //callback function(domCustomOption, domSelectOption) for change event
         } );
         </script>
     </body>

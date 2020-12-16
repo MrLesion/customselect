@@ -71,10 +71,11 @@
         display: inline-block;
     }
 
-    &.searching{
-        .customselect-list-input-item:not(.customselect-search-item):not(.customselect-dropdown-text){
+    &.searching {
+        .customselect-list-input-item:not(.customselect-search-item):not(.customselect-dropdown-text) {
             display: none;
-            &.match{
+
+            &.match {
                 display: block;
             }
         }

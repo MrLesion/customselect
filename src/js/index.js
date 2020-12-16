@@ -13,7 +13,7 @@
                     if ( typeof strBool === 'boolean' ) {
                         return strBool;
                     }
-                    bool = ( function () {
+                    bool = ( () => {
                         switch ( false ) {
                             case strBool.toLowerCase() !== 'true':
                                 return true;
@@ -151,8 +151,8 @@
                     characterData: false
                 },
                 bind: ( domSelector ) => {
-                    const observer = new MutationObserver( function ( mutations ) {
-                        mutations.forEach( function ( mutation ) {
+                    const observer = new MutationObserver( ( mutations ) => {
+                        mutations.forEach( ( mutation ) => {
                             customSelect.observer.callback( mutation, domSelector );
                         } );
                     } );
@@ -221,7 +221,8 @@
             },
             bindEvents: ( domCheckboxOptionInput, domOptions, objSelectStyle, objDataOptions ) => {
                 domCheckboxOptionInput.addEventListener( 'change', ( event ) => {
-                    domOptions.find( o => o.value === event.target.value ).selected = event.target.checked;
+                    let domSelectOption = domOptions.find( o => o.value === event.target.value );
+                    domSelectOption.selected = event.target.checked;
                     if ( customSelect.utils.parseBool( objDataOptions.dropdown ) === true ) {
                         const domDropdown = domCheckboxOptionInput.closest( '.customselect-dropdown' );
                         let selectedOptions = domOptions.filter( o => o.selected === true );
@@ -241,6 +242,9 @@
                         if ( objSelectStyle.type === 'select-one' ) {
                             domDropdown.classList.remove( 'open' );
                         }
+                    }
+                    if ( typeof objDataOptions.onChange === 'function' ) {
+                        objDataOptions.onChange( event.target, domSelectOption );
                     }
                 } );
             },
@@ -289,17 +293,9 @@
 
                 domOptions.forEach( ( domOption ) => {
                     if ( domOption.nodeName === 'OPTGROUP' ) {
-                        let nestedList = customSelect.utils.createElement( objSelectStyle.list, 'customselect-optgroup' );
-                        let nestedListLabel = customSelect.utils.createElement( objSelectStyle.item, 'customselect-optgroup-label' );
-                        nestedListLabel.innerText = domOption.label;
-                        nestedList.appendChild( nestedListLabel );
-                        const optGroupOptions = Array.from( domOption.children );
-                        optGroupOptions.forEach( ( domNestedOption ) => {
-                            const buildedOption = customSelect.buildDomOption( domNestedOption, customSelectID, objSelectStyle, objDataOptions );
-                            nestedList.appendChild( buildedOption.domInputGroup );
-                            domCheckboxList.appendChild( nestedList );
-                            customSelect.bindEvents( buildedOption.domCheckboxOptionInput, optGroupOptions, objSelectStyle, objDataOptions );
-                        } );
+                        const domOptgroup = customSelect.buildDomOptGroup( domOption, customSelectID, objSelectStyle, objDataOptions );
+                        domCheckboxList.appendChild( domOptgroup );
+
                     } else if ( domOption.nodeName === 'OPTION' ) {
                         const buildedOption = customSelect.buildDomOption( domOption, customSelectID, objSelectStyle, objDataOptions );
                         domCheckboxList.appendChild( buildedOption.domInputGroup );
@@ -339,6 +335,20 @@
                     customSelect.bindByElement( domSelector, boolInit );
                 }
             },
+            buildDomOptGroup: ( domOption, customSelectID, objSelectStyle, objDataOptions ) => {
+                let nestedList = customSelect.utils.createElement( objSelectStyle.list, 'customselect-optgroup' );
+                let nestedListLabel = customSelect.utils.createElement( objSelectStyle.item, 'customselect-optgroup-label' );
+                nestedListLabel.innerText = domOption.label;
+                nestedList.appendChild( nestedListLabel );
+                const optGroupOptions = Array.from( domOption.children );
+
+                optGroupOptions.forEach( ( domNestedOption ) => {
+                    const buildedOption = customSelect.buildDomOption( domNestedOption, customSelectID, objSelectStyle, objDataOptions );
+                    nestedList.appendChild( buildedOption.domInputGroup );
+                    customSelect.bindEvents( buildedOption.domCheckboxOptionInput, optGroupOptions, objSelectStyle, objDataOptions );
+                } );
+                return nestedList;
+            },
             buildDomOption: ( domOption, customSelectID, objSelectStyle, objDataOptions ) => {
                 let domCheckboxOptionInput = customSelect.utils.createElement( 'input', 'customselect-list-input' );
                 let strCustomSelectName = '';
@@ -357,7 +367,7 @@
                 domCheckboxOptionLabel.innerText = domOption.text;
                 domCheckboxOptionLabel.htmlFor = strId;
 
-                let domInputGroup = customSelect.positionLabel( objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, objSelectStyle );
+                let domInputGroup = customSelect.buildLabel( objDataOptions.labelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, objSelectStyle );
 
                 if ( domOption.disabled ) {
                     domOption.classList.add( 'disabled' );
@@ -374,7 +384,7 @@
                 };
 
             },
-            positionLabel: ( strLabelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, objSelectStyle ) => {
+            buildLabel: ( strLabelPosition, domCheckboxOptionInput, domCheckboxOptionLabel, objSelectStyle ) => {
                 const domInputWrapElement = customSelect.utils.createElement( objSelectStyle.item, 'customselect-list-input-item' );
 
                 if ( strLabelPosition === 'before' ) {
@@ -413,7 +423,7 @@
                     const selectedValues = Array.from( event.target.options ).filter( option => option.selected === true );
                     let customSelectAllInput = Array.from( customSelectList.querySelectorAll( 'input' ) );
 
-                    customSelectAllInput.forEach( function ( domInput ) {
+                    customSelectAllInput.forEach( ( domInput ) => {
                         if ( selectedValues.find( o => o.value === domInput.value ) ) {
                             domInput.checked = true;
                         } else {
@@ -448,6 +458,7 @@
         emptyText: 'Nothing selected',
         selectedText: 'selected',
         allSelectedText: 'All selected',
-        searchText: 'Search options'
+        searchText: 'Search options',
+        onChange: null
     };
 }( jQuery ) );
