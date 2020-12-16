@@ -3,6 +3,9 @@
 .customselect-added {
     position: absolute;
     opacity: 0;
+    height: 0;
+    width: 0;
+
 }
 
 .customselect-optgroup {
@@ -62,7 +65,8 @@
     .customselect-list-input {
         margin: .9em .2em .9em .9em;
         cursor: pointer;
-        &:checked + .customselect-list-label{}
+
+        &:checked+.customselect-list-label {}
     }
 
     .customselect-list-label {
