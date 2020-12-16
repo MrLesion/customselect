@@ -134,7 +134,6 @@
             cursor: pointer;
             padding: .375rem 1.75rem .375rem .75rem;
             border-radius: $select-border-radius;
-            display: inline-block;
             position: relative;
             display: flex;
             justify-content: flex-start;
@@ -160,6 +159,9 @@
                 position: absolute;
                 left: 0;
                 padding-left: 3em;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
             }
 
             &:last-child {
