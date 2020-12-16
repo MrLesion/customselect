@@ -433,7 +433,6 @@
         var domParent = domSelect.parentNode;
         var domCheckboxWrapper = customSelect.utils.createElement('div', 'customselect-list-container');
         domSelect.classList.add(customSelect.constants.added);
-        domSelect.setAttribute('style', 'display:none !important');
         domCheckboxWrapper.appendChild(domSelect);
         domCheckboxWrapper.appendChild(domCheckboxList);
         domParent.appendChild(domCheckboxWrapper);

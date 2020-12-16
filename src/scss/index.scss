@@ -1,7 +1,8 @@
 @import 'variables';
 
 .customselect-added {
-    display: none !important;
+    position: absolute;
+    opacity: 0;
 }
 
 .customselect-optgroup {
