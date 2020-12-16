@@ -61,6 +61,7 @@
     .customselect-list-input {
         margin: .9em .2em .9em .9em;
         cursor: pointer;
+        &:checked + .customselect-list-label{}
     }
 
     .customselect-list-label {
@@ -68,7 +69,8 @@
         padding: 0.5em;
         margin-bottom: 0.1em;
         border-radius: $select-border-radius;
-        display: inline-block;
+        display: block;
+        width: 100%;
     }
 
     &.searching {
@@ -80,8 +82,6 @@
             }
         }
     }
-
-
 
     //Bootstrap custom select
     &.customselect-dropdown {

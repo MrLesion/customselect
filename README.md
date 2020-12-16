@@ -6,26 +6,38 @@ Small plugin to convert selects/multi-selects to lists of radio-inputs / checkbo
 * Converts any normal select into a list of radio-inputs
 * Converts any multi select into a list of checkbox-inputs
 * Add dropdown functionality
+* Add inline search for long lists
 * Observe dynamically added markup, to bind them on the fly
 
 ## Usage
+Requires jQuery
 Bind on any parent element of one or more select-element(s)
 ```javascript
-// Bind on parent width default settings
+// Bind on select element or parent element - with default settings
 jQuery('select').customselect();
 
 // or with custom settings
 jQuery('.top-container-containing-the-selects').customselect({
-    labelPosition: 'before',
-    observe: false,
-    emptyText: 'Please select option',
-    search: true
+    labelPosition: 'after', // after | before | wrap
+    style: 'list', // list | none
+    dropdown: false, // true | false
+    search: false, // true | false
+    classList: '', // string
+    targetTypes: [ 'select-multiple', 'select-one' ], // select-multiple | select-one
+    parentNode: null, // null | selector
+    observe: true, // true | false
+    selectedLimit: 3, // number
+    selectedDelimiter: ' | ', // string
+    emptyText: 'Nothing selected', // string
+    selectedText: 'selected', // string
+    allSelectedText: 'All selected', // string
+    searchText: 'Search options' // string
 });
 ```
 
 ## Options
 
-All options are available at initialization and by data-attributes on the selects
+All options are available at initialization and by data-attributes on the select-elements
 
 | Key                       | Default             					| Values                     				|  Description                                                                  |
 | --------------------------|---------------------------------------|-------------------------------------------|-------------------------------------------------------------------------------|
@@ -40,7 +52,7 @@ All options are available at initialization and by data-attributes on the select
 | emptyText         		| `Nothing selected`  					| String                     				| Empty text for dropdown placeholder                                           |
 | selectedText      		| `selected`          					| String                     				| Selected postfix for multi-dropdown placeholder                               |
 | allSelectedText   		| `All selected`      					| String                     				| All selected text for multi-dropdown placeholder 							    |
-| selectedDelimiter   		| `|`      								| String                     				| The delimiter for selected options in multi select					        |
+| selectedDelimiter   		| `\|`      								| String                     				| The delimiter for selected options in multi select					        |
 | selectedLimit   			| `3`      								| Number                     				| Max selected options in multi select, before truncate					        |
 | searchText   				| `Search options`      				| String                     				| Search input placeholder test					        						|
 

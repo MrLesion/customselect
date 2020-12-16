@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Small plugin to convert selects/multi-selects to lists of radio-inputs / checkbox-inputs with change events and observer for dynamically added markup",
   "author": "Lasse Hove Nielsen <lassehove@lesion.dk> (https://lesion.dk)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrLesion/customselect"
+  },
   "scripts": {
     "dev": "gulp dev",
     "build": "gulp build"
