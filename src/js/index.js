@@ -1,7 +1,8 @@
 /*! https://github.com/MrLesion/customselect v1.0.0 by @MrLesion */
 (function($) {
     $.fn.customselect = function(options) {
-        const objOptions = $.extend({}, $.fn.customselect.defaults, options);
+        let objOptions = {};
+
         const customSelect = {
             events: {},
             constants: {
@@ -446,6 +447,15 @@
                 }
                 return domInputWrapElement;
             },
+            destroyDomList: (domSelector) => {
+                const customSelectId = domSelector.dataset.customselectDataId;
+                const customSelectList = document.getElementById(customSelectId);
+                if (customSelectList !== null) {
+                    customSelectList.parentNode.removeChild(customSelectList);
+                    domSelector.classList.remove(customSelect.constants.added);
+                }
+
+            },
             addToDom: (domSelect, domCheckboxList, objDataOptions) => {
                 const domParent = domSelect.parentNode;
                 let domCheckboxWrapper = customSelect.utils.createElement('div', 'customselect-list-container');
@@ -493,12 +503,25 @@
                 }
             }
         };
+
+        if (typeof options === 'string') {
+            if (typeof $.fn.customselect.public[options] === 'function') {
+                return $.fn.customselect.public[options](this, customSelect);
+            }
+        }
+
+        objOptions = $.extend({}, $.fn.customselect.defaults, options);
         customSelect.init(this);
+
         return this;
     };
 
-    $.fn.customselect.reset = function(selector) {
-        console.log(selector);
+    $.fn.customselect.public = {
+        destroy: (arrDomSelectors, customSelect) => {
+            Array.from(arrDomSelectors).forEach((domSelector) => {
+                customSelect.destroyDomList(domSelector);
+            });
+        }
     };
 
     $.fn.customselect.defaults = {
