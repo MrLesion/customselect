@@ -22,6 +22,7 @@ jQuery('.top-container-containing-the-selects').customselect({
     style: 'list', // list | none
     dropdown: false, // true | false
     search: false, // true | false
+    reset: false, // true | false
     classList: '', // string
     targetTypes: [ 'select-multiple', 'select-one' ], // select-multiple | select-one
     parentNode: null, // null | selector
@@ -31,7 +32,8 @@ jQuery('.top-container-containing-the-selects').customselect({
     emptyText: 'Nothing selected', // string
     selectedText: 'selected', // string
     allSelectedText: 'All selected', // string
-    searchText: 'Search options' // string
+    searchText: 'Search options', // string
+    resetText: 'All' // string
 });
 ```
 
@@ -48,13 +50,15 @@ All options are available at initialization and by data-attributes on the select
 | observe                   | `true`              					| Boolean                    				| Use Mutation Observer to watch for dynamically added markup                   |
 | dropdown                  | `false`              					| Boolean                    				| Convert to dropdown (using Bootstrap custom-select css)                       |
 | search                	| `false`              					| Boolean                    				| Adds an inline seach input to filter/search the options                       |
+| reset                     | `false`                               | Boolean                                   | Adds a reset option, that resets the list                                     |
 | targetTypes               | `['select-multiple', 'select-one']`   | Array['select-multiple', 'select-one']    | Narrow down to either select-one, select-multiple or both                     |
 | emptyText         		| `Nothing selected`  					| String                     				| Empty text for dropdown placeholder                                           |
 | selectedText      		| `selected`          					| String                     				| Selected postfix for multi-dropdown placeholder                               |
 | allSelectedText   		| `All selected`      					| String                     				| All selected text for multi-dropdown placeholder 							    |
 | selectedDelimiter   		| `\|`      								| String                     				| The delimiter for selected options in multi select					        |
 | selectedLimit   			| `3`      								| Number                     				| Max selected options in multi select, before truncate					        |
-| searchText   				| `Search options`      				| String                     				| Search input placeholder test					        						|
+| searchText                | `Search options`                      | String                                    | Search input placeholder                                                 |
+| resetText   				| `All`      				             | String                     				| Reset input label					        						|
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
