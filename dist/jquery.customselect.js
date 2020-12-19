@@ -1,6 +1,6 @@
 "use strict";
 
-/*! https://github.com/MrLesion/customselect v1.0.0 by @MrLesion */
+/*! https://github.com/MrLesion/customselect v1.1.0 by @MrLesion */
 (function ($) {
   $.fn.customselect = function (options) {
     var objOptions = {};
@@ -268,7 +268,22 @@
           }
         }
       },
-      bindEvents: function bindEvents(domCheckboxOptionInput, domOptions, objSelectStyle, objDataOptions) {
+      bindSelect: function bindSelect(domSelect, domCheckboxList) {
+        domSelect.onchange = function (event) {
+          var selectedOptions = Array.from(event.target.options).filter(function (o) {
+            return o.selected;
+          });
+          Array.from(domCheckboxList.querySelectorAll('.customselect-list-input:checked')).forEach(function (domInput) {
+            domInput.checked = false;
+          });
+          selectedOptions.forEach(function (selectedOption) {
+            var domCustomInput = domCheckboxList.querySelector('.customselect-list-input[value="' + selectedOption.value + '"]');
+            domCustomInput.checked = true;
+            customSelect.utils.triggerEvent(domCustomInput, 'change');
+          });
+        };
+      },
+      bindInput: function bindInput(domCheckboxOptionInput, domOptions, objSelectStyle, objDataOptions) {
         domCheckboxOptionInput.addEventListener('change', function (event) {
           var domSelectOption = domOptions.find(function (o) {
             return o.value === event.target.value;
@@ -283,7 +298,11 @@
             var selectedTextNode = domDropdown.querySelector('.customselect-dropdown-text');
 
             if (selectedOptions.length === 0) {
-              selectedTextNode.innerText = objDataOptions.emptyText;
+              if (customSelect.utils.parseBool(objDataOptions.reset) === true) {
+                selectedTextNode.innerText = objDataOptions.resetText;
+              } else {
+                selectedTextNode.innerText = objDataOptions.emptyText;
+              }
             } else {
               var selectedOptionsText = selectedOptions.map(function (o) {
                 return o.textContent;
@@ -354,6 +373,11 @@
 
         if (customSelect.utils.parseBool(objDataOptions.dropdown) === true) {
           domCheckboxList.classList.add('customselect-dropdown');
+
+          if (objDataOptions.dropdownAnimation !== '') {
+            domCheckboxList.classList.add(objDataOptions.dropdownAnimation);
+          }
+
           var domSelectedOption = customSelect.utils.createElement(objSelectStyle.item, 'customselect-list-input-item customselect-dropdown-text');
           domCheckboxList.appendChild(domSelectedOption);
         }
@@ -365,7 +389,6 @@
         }
 
         if (customSelect.utils.parseBool(objDataOptions.reset) === true) {
-          //domCheckboxList.classList.add( 'customselect-search' );
           var domResetListInput = customSelect.reset.build(objSelectStyle, objDataOptions);
           domCheckboxList.appendChild(domResetListInput);
         }
@@ -377,7 +400,7 @@
           } else if (domOption.nodeName === 'OPTION') {
             var buildedOption = customSelect.buildDomOption(domOption, customSelectID, objSelectStyle, objDataOptions);
             domCheckboxList.appendChild(buildedOption.domInputGroup);
-            customSelect.bindEvents(buildedOption.domCheckboxOptionInput, domOptions, objSelectStyle, objDataOptions);
+            customSelect.bindInput(buildedOption.domCheckboxOptionInput, domOptions, objSelectStyle, objDataOptions);
           }
         });
         customSelect.addToDom(domSelect, domCheckboxList, objDataOptions);
@@ -422,7 +445,7 @@
         optGroupOptions.forEach(function (domNestedOption) {
           var buildedOption = customSelect.buildDomOption(domNestedOption, customSelectID, objSelectStyle, objDataOptions);
           nestedList.appendChild(buildedOption.domInputGroup);
-          customSelect.bindEvents(buildedOption.domCheckboxOptionInput, optGroupOptions, objSelectStyle, objDataOptions);
+          customSelect.bindInput(buildedOption.domCheckboxOptionInput, optGroupOptions, objSelectStyle, objDataOptions);
         });
         return nestedList;
       },
@@ -510,24 +533,7 @@
           customSelect.reset.bindEvents(domCheckboxList, hasDefault);
         }
 
-        domSelect.onchange = function (event) {
-          var refId = event.target.dataset.customselectDataId;
-          var customSelectList = document.getElementById(refId);
-          var selectedValues = Array.from(event.target.options).filter(function (option) {
-            return option.selected === true;
-          });
-          var customSelectAllInput = Array.from(customSelectList.querySelectorAll('input'));
-          customSelectAllInput.forEach(function (domInput) {
-            if (selectedValues.find(function (o) {
-              return o.value === domInput.value;
-            })) {
-              domInput.checked = true;
-            } else {
-              domInput.checked = false;
-            }
-          });
-          customSelect.triggerInitialState(customSelectList);
-        };
+        customSelect.bindSelect(domSelect, domCheckboxList);
       },
       triggerInitialState: function triggerInitialState(domCheckboxWrapper) {
         var preCheckedElements = domCheckboxWrapper.querySelectorAll('input');
@@ -563,6 +569,7 @@
     search: false,
     reset: false,
     classList: '',
+    dropdownAnimation: '',
     targetTypes: ['select-multiple', 'select-one'],
     parentNode: null,
     observe: true,

@@ -120,10 +120,7 @@
     </div>
     <!-- jQuery is required -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <!-- Handlebars is NOT required -->
-    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
     <script src="dist/jquery.customselect.min.js"></script>
-    <script src="src/test.js"></script>
     <script>
     //Defaults
     jQuery('.customselect-parent-node').customselect({
@@ -131,8 +128,9 @@
         style: 'list', // list | none
         dropdown: false, // true | false
         search: false, // true | false
-        reset: true, //true | false
+        reset: false, //true | false
         classList: '', // string
+        dropdownAnimation: 'drop', // string
         targetTypes: ['select-multiple', 'select-one'], // select-multiple | select-one
         parentNode: null, // null | selector
         observe: true, // true | false

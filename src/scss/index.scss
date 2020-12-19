@@ -84,7 +84,7 @@
             display: none;
 
             &.match {
-                display: block;
+                display: flex;
             }
         }
     }
@@ -129,6 +129,7 @@
             .customselect-dropdown-text {
                 border-radius: $select-border-radius $select-border-radius 0 0;
             }
+
         }
 
         .customselect-dropdown-text {
