@@ -5,7 +5,7 @@
   $.fn.customselect = function (options) {
     var objOptions = {};
     var customSelect = {
-      events: {},
+      _events: {},
       constants: {
         added: 'customselect-added'
       },
@@ -79,12 +79,15 @@
 
           return parentNodeToWatch;
         },
-        createCustomEvent: function createCustomEvent(strEventType) {
-          var event = new Event(strEventType);
-          customSelect.events[strEventType] = event;
+        createCustomEvents: function createCustomEvents(strEventTypes) {
+          var arrEventTypes = strEventTypes.split(' ');
+          arrEventTypes.forEach(function (strEventType) {
+            var event = new Event(strEventType);
+            customSelect._events[strEventType] = event;
+          });
         },
         triggerCustomEvent: function triggerCustomEvent(domTarget, strEventType) {
-          var event = customSelect.events[strEventType];
+          var event = customSelect._events[strEventType];
 
           if (event) {
             domTarget.dispatchEvent(event);
@@ -106,8 +109,7 @@
         Array.from(arrDomSelectors).forEach(function (domSelector) {
           customSelect.buildDomList(domSelector, true);
         });
-        customSelect.utils.createCustomEvent('dropdown.open');
-        customSelect.utils.createCustomEvent('dropdown.close');
+        customSelect.utils.createCustomEvents('dropdown.open dropdown.close list.builded observer.addedNodes');
       },
       dropdown: {
         bindEvents: function bindEvents(domCheckboxList) {
@@ -190,6 +192,8 @@
                     customSelect.buildDomList(domSelector, false);
                   }
                 }
+
+                customSelect.utils.triggerCustomEvent(domSelector, 'observer.addedNodes');
               }
             });
           }
@@ -534,6 +538,7 @@
         }
 
         customSelect.bindSelect(domSelect, domCheckboxList);
+        customSelect.utils.triggerCustomEvent(domCheckboxList, 'list.builded');
       },
       triggerInitialState: function triggerInitialState(domCheckboxWrapper) {
         var preCheckedElements = domCheckboxWrapper.querySelectorAll('input');

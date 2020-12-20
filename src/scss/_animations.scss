@@ -1,11 +1,11 @@
-@keyframes drop {
-    0% {
-        transform: rotateX(-90deg);
+@keyframes growDown {
+	0% {
+        transform: rotateX(-90deg)
     }
     70% {
-        transform: rotateX(20deg);
+        transform: rotateX(20deg) 
     }
     100% {
-        transform: rotateX(0deg);
+        transform: rotateX(0deg) 
     }
 }

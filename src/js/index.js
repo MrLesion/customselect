@@ -5,7 +5,7 @@
         let objOptions = {};
 
         const customSelect = {
-            events: {},
+            _events: {},
             constants: {
                 added: 'customselect-added'
             },
@@ -66,12 +66,17 @@
                     return parentNodeToWatch;
 
                 },
-                createCustomEvent: ( strEventType ) => {
-                    const event = new Event( strEventType );
-                    customSelect.events[ strEventType ] = event;
+                createCustomEvents: ( strEventTypes ) => {
+                    let arrEventTypes = strEventTypes.split( ' ' );
+
+                    arrEventTypes.forEach( ( strEventType ) => {
+                        const event = new Event( strEventType );
+                        customSelect._events[ strEventType ] = event;
+                    } );
+
                 },
                 triggerCustomEvent: ( domTarget, strEventType ) => {
-                    const event = customSelect.events[ strEventType ];
+                    const event = customSelect._events[ strEventType ];
                     if ( event ) {
                         domTarget.dispatchEvent( event );
                     }
@@ -93,8 +98,7 @@
                 Array.from( arrDomSelectors ).forEach( ( domSelector ) => {
                     customSelect.buildDomList( domSelector, true );
                 } );
-                customSelect.utils.createCustomEvent( 'dropdown.open' );
-                customSelect.utils.createCustomEvent( 'dropdown.close' );
+                customSelect.utils.createCustomEvents( 'dropdown.open dropdown.close list.builded observer.addedNodes' );
             },
             dropdown: {
                 bindEvents: ( domCheckboxList ) => {
@@ -175,6 +179,7 @@
                                         customSelect.buildDomList( domSelector, false );
                                     }
                                 }
+                                customSelect.utils.triggerCustomEvent( domSelector, 'observer.addedNodes' );
                             }
                         } );
                     }
@@ -502,12 +507,14 @@
                 }
 
                 customSelect.bindSelect( domSelect, domCheckboxList );
+                customSelect.utils.triggerCustomEvent( domCheckboxList, 'list.builded' );
             },
             triggerInitialState: ( domCheckboxWrapper ) => {
                 const preCheckedElements = domCheckboxWrapper.querySelectorAll( 'input' );
                 if ( preCheckedElements.length > 0 ) {
                     customSelect.utils.triggerEvent( preCheckedElements, 'change' );
                 }
+
             }
         };
 
@@ -519,6 +526,8 @@
 
         objOptions = $.extend( {}, $.fn.customselect.defaults, options );
         customSelect.init( this );
+
+
 
         return this;
     };

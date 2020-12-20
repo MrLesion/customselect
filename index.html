@@ -1,83 +1,101 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>jQuery Custom Select</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="dist/jquery.customselect.css">
-</head>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>jQuery Custom Select</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="dist/jquery.customselect.css">
+    </head>
 
-<body>
-    <div class="container js-test-container">
-        <div class="row">
-            <div class="col-12">
-                <h1>Demos</h1>
-                <div class="row customselect-parent-node">
-                    <div class="col-6 mb-4">
-                        <h4 for="multi">Default multiple</h4>
-                        <select multiple>
-                            <option value="1">Multi-select 1</option>
-                            <option value="2">Multi-select 2</option>
-                            <option value="3">Multi-select 3</option>
-                            <option value="4">Multi-select 4</option>
-                            <option value="5">Multi-select. 5</option>
-                            <option value="6">Multi-select 6</option>
-                        </select>
+    <body>
+        <div class="container js-test-container">
+            <div class="row">
+                <div class="col-12">
+                    <h1>Demos</h1>
+                    <div class="row customselect-parent-node">
+                        <div class="col-6 mb-4">
+                            <h4 for="multi">Default multiple</h4>
+                            <select multiple>
+                                <option value="1">Multi-select 1</option>
+                                <option value="2">Multi-select 2</option>
+                                <option value="3">Multi-select 3</option>
+                                <option value="4">Multi-select 4</option>
+                                <option value="5">Multi-select. 5</option>
+                                <option value="6">Multi-select 6</option>
+                            </select>
+                        </div>
+                        <hr />
+                        <div class=" col-6 mb-4">
+                            <h4 for="multi">Default single</h4>
+                            <select name="multi" id="multi">
+                                <option value="1">Multi-select 1</option>
+                                <option value="2">Multi-select 2</option>
+                                <option value="3">Multi-select 3</option>
+                                <option value="4">Multi-select 4</option>
+                                <option value="5">Multi-select. 5</option>
+                                <option value="6">Multi-select 6</option>
+                            </select>
+                        </div>
+                        <hr />
+                        <div class="col-6 mb-4">
+                            <h4>Dropdown multiple</h4>
+                            <select multiple data-dropdown="true">
+                                <option value="1">Multi-select 1</option>
+                                <option value="2">Multi-select 2</option>
+                                <option class="bold" value="3">Multi-select 3</option>
+                                <option value="4">Multi-select 4</option>
+                                <option class="disabled" value="5">Multi-select. 5</option>
+                                <option value="6">Multi-select 6</option>
+                            </select>
+                        </div>
+                        <hr />
+                        <div class="col-6 mb-4">
+                            <h4>Dropdown single</h4>
+                            <select data-dropdown="true">
+                                <option value="1">Multi-select 1</option>
+                                <option disabled value="2">Multi-select 2</option>
+                                <option class="bold" value="3">Multi-select 3</option>
+                                <option value="4">Multi-select 4</option>
+                                <option class="disabled" value="5">Multi-select. 5</option>
+                                <option value="6">Multi-select 6</option>
+                            </select>
+                        </div>
+                        <hr />
+                        <div class="col-6 mb-4">
+                            <h4>Dropdown with optgroup & search</h4>
+                            <select multiple data-dropdown="true" data-search="true" data-reset="true">
+                                <option value="" selected>default</option>
+                                <option value="2">Select 2</option>
+                                <option value="3">Select 3</option>
+                                <option value="4">Select 4</option>
+                                <option value="5">Select 5</option>
+                                <option value="6">Select 6</option>
+                            </select>
+                        </div>
+                        <hr />
+                        <div class="col-6 mb-4">
+                            <h4>Dropdown single with optgroup</h4>
+                            <select id="bambambam" data-dropdown="true">
+                                <option value="" selected>default</option>
+                                <option value="2">Select 2</option>
+                                <option value="3">Select 3</option>
+                                <optgroup label="Header">
+                                    <option value="4">Select 4</option>
+                                    <option value="5">Select 5</option>
+                                    <option value="6">Select 6</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <hr />
+                        <div class="col-6 hbs-container"></div>
                     </div>
-                    <hr />
-                    <div class=" col-6 mb-4">
-                        <h4 for="multi">Default single</h4>
-                        <select name="multi" id="multi">
-                            <option value="1">Multi-select 1</option>
-                            <option value="2">Multi-select 2</option>
-                            <option value="3">Multi-select 3</option>
-                            <option value="4">Multi-select 4</option>
-                            <option value="5">Multi-select. 5</option>
-                            <option value="6">Multi-select 6</option>
-                        </select>
-                    </div>
-                    <hr />
+                </div>
+                <div class="new-row row">
                     <div class="col-6 mb-4">
-                        <h4>Dropdown multiple</h4>
-                        <select multiple data-dropdown="true">
-                            <option value="1">Multi-select 1</option>
-                            <option value="2">Multi-select 2</option>
-                            <option class="bold" value="3">Multi-select 3</option>
-                            <option value="4">Multi-select 4</option>
-                            <option class="disabled" value="5">Multi-select. 5</option>
-                            <option value="6">Multi-select 6</option>
-                        </select>
-                    </div>
-                    <hr />
-                    <div class="col-6 mb-4">
-                        <h4>Dropdown single</h4>
-                        <select data-dropdown="true">
-                            <option value="1">Multi-select 1</option>
-                            <option disabled value="2">Multi-select 2</option>
-                            <option class="bold" value="3">Multi-select 3</option>
-                            <option value="4">Multi-select 4</option>
-                            <option class="disabled" value="5">Multi-select. 5</option>
-                            <option value="6">Multi-select 6</option>
-                        </select>
-                    </div>
-                    <hr />
-                    <div class="col-6 mb-4">
-                        <h4>Dropdown with optgroup & search</h4>
-                        <select multiple data-dropdown="true" data-search="true" data-reset="true">
-                            <option value="" selected>default</option>
-                            <option value="2">Select 2</option>
-                            <option value="3">Select 3</option>
-                            <option value="4">Select 4</option>
-                            <option value="5">Select 5</option>
-                            <option value="6">Select 6</option>
-                        </select>
-                    </div>
-                    <hr />
-                    <div class="col-6 mb-4">
-                        <h4>Dropdown single with optgroup</h4>
-                        <select id="bambambam" data-dropdown="true">
+                        <h4>Try convert</h4>
+                        <select data-dropdown="true" class="js-convert-single">
                             <option value="" selected>default</option>
                             <option value="2">Select 2</option>
                             <option value="3">Select 3</option>
@@ -87,64 +105,45 @@
                                 <option value="6">Select 6</option>
                             </optgroup>
                         </select>
+                        <a href="#" class=" mt-2 btn btn-primary" onclick="javascript:jQuery( '.js-convert-single' ).customselect();">Convert</a>
                     </div>
-                    <hr />
-                    <div class="col-6 hbs-container"></div>
-                </div>
-            </div>
-            <div class="new-row row">
-                <div class="col-6 mb-4">
-                    <h4>Try convert</h4>
-                    <select data-dropdown="true" class="js-convert-single">
-                        <option value="" selected>default</option>
-                        <option value="2">Select 2</option>
-                        <option value="3">Select 3</option>
-                        <optgroup label="Header">
-                            <option value="4">Select 4</option>
-                            <option value="5">Select 5</option>
-                            <option value="6">Select 6</option>
-                        </optgroup>
-                    </select>
-                    <a href="#" class=" mt-2 btn btn-primary" onclick="javascript:jQuery( '.js-convert-single' ).customselect();">Convert</a>
-                </div>
-                <div class="col-6 mb-4">
-                    <select multiple class="js-convert-multiple">
-                        <option value="" selected>default</option>
-                        <option value="2">Select 2</option>
-                        <option value="3">Select 3</option>
-                    </select>
-                    <a href="#" class=" mt-2 btn btn-primary" onclick="javascript:jQuery( '.js-convert-multiple' ).customselect.reset();">Convert</a>
+                    <div class="col-6 mb-4">
+                        <select multiple class="js-convert-multiple">
+                            <option value="" selected>default</option>
+                            <option value="2">Select 2</option>
+                            <option value="3">Select 3</option>
+                        </select>
+                        <a href="#" class=" mt-2 btn btn-primary" onclick="javascript:jQuery( '.js-convert-multiple' ).customselect();">Convert</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- jQuery is required -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="dist/jquery.customselect.min.js"></script>
-    <script>
-    //Defaults
-    jQuery('.customselect-parent-node').customselect({
-        labelPosition: 'after', // after | before | wrap
-        style: 'list', // list | none
-        dropdown: false, // true | false
-        search: false, // true | false
-        reset: false, //true | false
-        classList: '', // string
-        dropdownAnimation: 'drop', // string
-        targetTypes: ['select-multiple', 'select-one'], // select-multiple | select-one
-        parentNode: null, // null | selector
-        observe: true, // true | false
-        selectedLimit: 3, // number
-        selectedDelimiter: ' | ', // string
-        emptyText: 'Nothing selected', // string
-        selectedText: 'selected', // string
-        allSelectedText: 'All selected', // string
-        searchText: 'Search options', // string
-        resetText: 'All', // string
-        onChange: null //callback function(domCustomOption, domSelectOption) for change event
-    });
-    
-    </script>
-</body>
+        <!-- jQuery is required -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="dist/jquery.customselect.min.js"></script>
+        <script>
+        //Defaults
+        jQuery( '.customselect-parent-node' ).customselect( {
+            labelPosition: 'after', // after | before | wrap
+            style: 'list', // list | none
+            dropdown: false, // true | false
+            search: false, // true | false
+            reset: false, //true | false
+            classList: '', // string
+            dropdownAnimation: 'grow-down', // string
+            targetTypes: [ 'select-multiple', 'select-one' ], // select-multiple | select-one
+            parentNode: null, // null | selector
+            observe: true, // true | false
+            selectedLimit: 3, // number
+            selectedDelimiter: ' | ', // string
+            emptyText: 'Nothing selected', // string
+            selectedText: 'selected', // string
+            allSelectedText: 'All selected', // string
+            searchText: 'Search options', // string
+            resetText: 'All', // string
+            onChange: null //callback function(domCustomOption, domSelectOption) for change event
+        } );
+        </script>
+    </body>
 
 </html>
