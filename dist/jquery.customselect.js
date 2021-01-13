@@ -289,9 +289,9 @@
       },
       bindInput: function bindInput(domCheckboxOptionInput, domOptions, objSelectStyle, objDataOptions) {
         domCheckboxOptionInput.addEventListener('change', function (event) {
-          var domSelectOption = domOptions.find(function (o) {
+          var domSelectOption = domOptions.filter(function (o) {
             return o.value === event.target.value;
-          });
+          })[0];
           domSelectOption.selected = event.target.checked;
 
           if (customSelect.utils.parseBool(objDataOptions.dropdown) === true) {
@@ -338,7 +338,7 @@
           }
 
           if (typeof objDataOptions.onChange === 'function') {
-            objDataOptions.onChange(event.target, domSelectOption);
+            objDataOptions.onChange(event.target, domSelectOption.closest('select'));
           }
         });
       },
@@ -377,11 +377,6 @@
 
         if (customSelect.utils.parseBool(objDataOptions.dropdown) === true) {
           domCheckboxList.classList.add('customselect-dropdown');
-
-          if (objDataOptions.dropdownAnimation !== '') {
-            domCheckboxList.classList.add(objDataOptions.dropdownAnimation);
-          }
-
           var domSelectedOption = customSelect.utils.createElement(objSelectStyle.item, 'customselect-list-input-item customselect-dropdown-text');
           domCheckboxList.appendChild(domSelectedOption);
         }
@@ -574,7 +569,6 @@
     search: false,
     reset: false,
     classList: '',
-    dropdownAnimation: '',
     targetTypes: ['select-multiple', 'select-one'],
     parentNode: null,
     observe: true,
@@ -673,39 +667,6 @@ if (!Array.from) {
 		});
 	}());
 }
-// Array.prototype.find - MIT License (c) 2013 Paul Miller <http://paulmillr.com>
-// For all details and docs: https://github.com/paulmillr/array.prototype.find
-// Fixes and tests supplied by Duncan Hall <http://duncanhall.net> 
-(function(globals){
-  if (Array.prototype.find) return;
-
-  var find = function(predicate) {
-    var list = Object(this);
-    var length = list.length < 0 ? 0 : list.length >>> 0; // ES.ToUint32;
-    if (length === 0) return undefined;
-    if (typeof predicate !== 'function' || Object.prototype.toString.call(predicate) !== '[object Function]') {
-      throw new TypeError('Array#find: predicate must be a function');
-    }
-    var thisArg = arguments[1];
-    for (var i = 0, value; i < length; i++) {
-      value = list[i];
-      if (predicate.call(thisArg, value, i, list)) return value;
-    }
-    return undefined;
-  };
-
-  if (Object.defineProperty) {
-    try {
-      Object.defineProperty(Array.prototype, 'find', {
-        value: find, configurable: true, enumerable: false, writable: true
-      });
-    } catch(e) {}
-  }
-
-  if (!Array.prototype.find) {
-    Array.prototype.find = find;
-  }
-})(this);
 
 			}.call(
 				typeof window === 'object' && window ||
