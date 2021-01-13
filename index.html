@@ -68,6 +68,14 @@
                             <select multiple data-dropdown="true" data-search="true" data-reset="true" data-reset-text="test">
                             </select>
                         </div>
+                          <hr />
+                        <div class="col-6 mb-4">
+                            <h4>Dropdown with optgroup & search</h4>
+                            <select multiple data-dropdown="true" data-search="true" data-reset="true" data-reset-text="test">
+                                <option value="2">Select 2</option>
+                                <option value="3">Select 3</option>
+                            </select>
+                        </div>
                         <hr />
                         <div class="col-6 mb-4">
                             <h4>Dropdown single with optgroup</h4>
@@ -109,6 +117,9 @@
                         </select>
                         <a href="#" class=" mt-2 btn btn-primary" onclick="javascript:jQuery( '.js-convert-multiple' ).customselect();">Convert</a>
                     </div>
+                </div>
+                <div class="col-12">
+                    <a class="btn btn-primary" onclick="javascript:jQuery('select').customselect('destroy');">Destroy all selects</a>
                 </div>
             </div>
         </div>
