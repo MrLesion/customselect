@@ -253,18 +253,27 @@
           domInputGroup.classList.add('customselect-reset-item');
           return domInputGroup;
         },
-        bindEvents: function bindEvents(domCheckboxList, boolHasDefault) {
+        bindEvents: function bindEvents(domCheckboxList, objDataOptions) {
           var resetOption = domCheckboxList.querySelector('.customselect-reset-input');
-          var otherOptions = Array.from(domCheckboxList.querySelectorAll('.customselect-list-input'));
+          var allOptions = Array.from(domCheckboxList.querySelectorAll('.customselect-list-input'));
+          var hasDefault = allOptions.filter(function (o) {
+            return o.checked;
+          }).length > 0;
 
-          if (boolHasDefault === false) {
+          if (hasDefault === false) {
             resetOption.checked = true;
+            console.log(allOptions.length);
+
+            if (allOptions.length === 0) {
+              var selectedTextNode = domCheckboxList.querySelector('.customselect-dropdown-text');
+              selectedTextNode.innerText = objDataOptions.emptyText;
+            }
           }
 
           if (resetOption !== null) {
             resetOption.addEventListener('click', function (event) {
               event.target.checked = true;
-              otherOptions.forEach(function (domInput) {
+              allOptions.forEach(function (domInput) {
                 domInput.checked = false;
                 customSelect.utils.triggerEvent(domInput, 'change');
               });
@@ -530,11 +539,7 @@
         }
 
         if (customSelect.utils.parseBool(objDataOptions.reset) === true) {
-          var allOptions = Array.from(domCheckboxList.querySelectorAll('.customselect-list-input'));
-          var hasDefault = allOptions.filter(function (o) {
-            return o.checked;
-          }).length > 0;
-          customSelect.reset.bindEvents(domCheckboxList, hasDefault);
+          customSelect.reset.bindEvents(domCheckboxList, objDataOptions);
         }
 
         customSelect.bindSelect(domSelect, domCheckboxList);
