@@ -279,9 +279,9 @@
                     });
                 };
             },
-            bindInput: (domCheckboxOptionInput, domOptions, objSelectStyle, objDataOptions) => {
-                domCheckboxOptionInput.addEventListener('change', (event) => {
-                    let domSelectOption = domOptions.find(o => o.value === event.target.value);
+            bindInput: ( domCheckboxOptionInput, domOptions, objSelectStyle, objDataOptions ) => {
+                domCheckboxOptionInput.addEventListener( 'change', ( event ) => {
+                    let domSelectOption = domOptions.filter( o => o.value === event.target.value )[0];
                     domSelectOption.selected = event.target.checked;
                     if (customSelect.utils.parseBool(objDataOptions.dropdown) === true) {
                         const domDropdown = domCheckboxOptionInput.closest('.customselect-dropdown');
@@ -321,8 +321,8 @@
                         let resetOption = domList.querySelector('.customselect-reset-input');
                         resetOption.checked = allOptions.filter(o => o.checked).length === 0;
                     }
-                    if (typeof objDataOptions.onChange === 'function') {
-                        objDataOptions.onChange(event.target, domSelectOption);
+                    if ( typeof objDataOptions.onChange === 'function' ) {
+                        objDataOptions.onChange( event.target, domSelectOption.closest( 'select' ) );
                     }
 
                 });
@@ -358,13 +358,11 @@
                 domCheckboxList.id = customSelectID;
                 domCheckboxList.dataset.placeholder = objDataOptions.emptyText;
                 domCheckboxList.dataset.type = objSelectStyle.type;
-                if (customSelect.utils.parseBool(objDataOptions.dropdown) === true) {
-                    domCheckboxList.classList.add('customselect-dropdown');
-                    if (objDataOptions.dropdownAnimation !== '') {
-                        domCheckboxList.classList.add(objDataOptions.dropdownAnimation);
-                    }
-                    let domSelectedOption = customSelect.utils.createElement(objSelectStyle.item, 'customselect-list-input-item customselect-dropdown-text');
-                    domCheckboxList.appendChild(domSelectedOption);
+                if ( customSelect.utils.parseBool( objDataOptions.dropdown ) === true ) {
+                    domCheckboxList.classList.add( 'customselect-dropdown' );
+                    let domSelectedOption = customSelect.utils.createElement( objSelectStyle.item, 'customselect-list-input-item customselect-dropdown-text' );
+                    domCheckboxList.appendChild( domSelectedOption );
+
                 }
 
                 if (customSelect.utils.parseBool(objDataOptions.search) === true) {
@@ -537,8 +535,6 @@
         objOptions = $.extend({}, $.fn.customselect.defaults, options);
         customSelect.init(this);
 
-
-
         return this;
     };
 
@@ -557,8 +553,7 @@
         search: false,
         reset: false,
         classList: '',
-        dropdownAnimation: '',
-        targetTypes: ['select-multiple', 'select-one'],
+        targetTypes: [ 'select-multiple', 'select-one' ],
         parentNode: null,
         observe: true,
         selectedLimit: 3,
