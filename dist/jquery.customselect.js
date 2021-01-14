@@ -262,7 +262,6 @@
 
           if (hasDefault === false) {
             resetOption.checked = true;
-            console.log(allOptions.length);
 
             if (allOptions.length === 0) {
               var selectedTextNode = domCheckboxList.querySelector('.customselect-dropdown-text');
@@ -312,7 +311,11 @@
 
             if (selectedOptions.length === 0) {
               if (customSelect.utils.parseBool(objDataOptions.reset) === true) {
-                selectedTextNode.innerText = objDataOptions.resetText;
+                if (selectedOptions.length > 0) {
+                  selectedTextNode.innerText = objDataOptions.resetText;
+                } else {
+                  selectedTextNode.innerText = objDataOptions.emptyText;
+                }
               } else {
                 selectedTextNode.innerText = objDataOptions.emptyText;
               }
