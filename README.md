@@ -43,6 +43,10 @@ jQuery('select').customselect();
 
 All options are available at initialization and by data-attributes on the select-elements
 
+```html
+<select data-label-position="wrap" data-reset-text="All is selected" data-class-list="custom-select-class" />
+```
+
 | Key                       | Default             					| Values                     				|  Description                                                                  |
 | --------------------------|---------------------------------------|-------------------------------------------|-------------------------------------------------------------------------------|
 | labelPosition             | `after`             					| `after`, `before`, `wrap`  				| Position of the label - `wrap` wraps the input in the label  				    |
